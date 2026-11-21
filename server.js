@@ -4,17 +4,54 @@ const cors = require("cors");
 
 const app = express();
 
+app.set("trust proxy", 1);
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 
 const PORT = process.env.PORT || 3000;
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
+// Ограничение: 10 запросов в минуту с одного IP
+const requests = new Map();
+
+app.use("/chat", (req, res, next) => {
+  const ip = req.ip;
+  const now = Date.now();
+  const record = requests.get(ip);
+
+  if (!record || now - record.start >= 60000) {
+    requests.set(ip, { start: now, count: 1 });
+    return next();
+  }
+
+  if (record.count >= 10) {
+    return res.status(429).json({
+      error: "Too many requests. Try again later."
+    });
+  }
+
+  record.count++;
+  next();
+});
+
+// Удаляем устаревшие записи
+app.use((req, res, next) => {
+  const now = Date.now();
+
+  for (const [ip, record] of requests) {
+    if (now - record.start >= 60000) {
+      requests.delete(ip);
+    }
+  }
+
+  next();
+});
+
 app.get("/", (req, res) => {
   res.json({
     name: "Taiga AI Server",
     status: "online",
-    version: "1.0.0"
+    version: "1.1.0"
   });
 });
 
@@ -26,7 +63,7 @@ app.post("/chat", async (req, res) => {
       });
     }
 
-    const messages = req.body.messages;
+    const messages = req.body?.messages;
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({
@@ -40,19 +77,24 @@ app.post("/chat", async (req, res) => {
       });
     }
 
-    const safeMessages = messages.map(message => {
+    const safeMessages = [];
+
+    for (const message of messages) {
       if (
+        !message ||
         !["system", "user", "assistant"].includes(message.role) ||
         typeof message.content !== "string"
       ) {
-        throw new Error("Invalid message format");
+        return res.status(400).json({
+          error: "Invalid message format"
+        });
       }
 
-      return {
+      safeMessages.push({
         role: message.role,
         content: message.content.slice(0, 12000)
-      };
-    });
+      });
+    }
 
     const response = await fetch(
       "https://api.groq.com/openai/v1/chat/completions",
