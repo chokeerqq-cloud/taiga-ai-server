@@ -1,0 +1,14 @@
+
+{
+  "id": "/taiga-ai-server/",
+  "name": "Taiga AI",
+  "short_name": "Taiga",
+  "description": "Твой личный аниме-компаньон Тайга Айсака. Общайся, делись мыслями и получай поддержку.",
+  "lang": "ru",
+  "start_url": "/taiga-ai-server/",
+  "scope": "/taiga-ai-server/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff2f7",
+  "theme_color": "#f7a8c8"
+}
