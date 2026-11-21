@@ -5,10 +5,25 @@
   "short_name": "Taiga",
   "description": "Твой личный аниме-компаньон Тайга Айсака. Общайся, делись мыслями и получай поддержку.",
   "lang": "ru",
+  "dir": "ltr",
   "start_url": "/taiga-ai-server/",
   "scope": "/taiga-ai-server/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#fff2f7",
-  "theme_color": "#f7a8c8"
+  "theme_color": "#f7a8c8",
+  "icons": [
+    {
+      "src": "/taiga-ai-server/taiga-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/taiga-ai-server/taiga-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
 }
