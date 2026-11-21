@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f7a8c8">
+<title>Taiga AI</title>
+<style>
+:root{--pink:#f7a8c8;--pink2:#ffe0ec;--pink3:#fff2f7;--ink:#392735;--muted:#927b89;--line:#f1d8e4;--white:#fff;--shadow:0 10px 30px rgba(124,61,91,.10)}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#fff5f9,#fce5ef);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;height:100dvh;display:flex;justify-content:center}
+.app{width:100%;max-width:760px;height:100dvh;background:rgba(255,255,255,.78);display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow);position:relative}
+header{height:76px;flex-shrink:0;background:linear-gradient(100deg,#f8b4d0,#ffd6e6);display:flex;align-items:center;padding:10px 15px;gap:12px;border-bottom:1px solid #f3c9da}
+.avatar{width:52px;height:52px;border-radius:17px;object-fit:cover;background:#fff0f6;border:2px solid #fff;box-shadow:0 3px 10px #b86d8b33}
+.headtxt{flex:1;min-width:0}.headtxt h1{font-size:19px;margin:0;font-weight:800}.status{font-size:12px;color:#795568;margin-top:3px}.headbtn{border:0;background:#ffffffa8;border-radius:13px;width:42px;height:42px;font-size:19px;color:#68475a}
+main{flex:1;overflow:auto;padding:16px 13px 12px;scroll-behavior:smooth}
+.welcome{text-align:center;margin:8px auto 20px;max-width:420px}.welcome img{width:112px;height:112px;object-fit:cover;border-radius:28px;border:4px solid white;box-shadow:var(--shadow);background:#fff0f6}.welcome h2{font-size:21px;margin:10px 0 4px}.welcome p{font-size:13px;color:var(--muted);margin:0}
+.message{display:flex;margin:12px 0;gap:8px;align-items:flex-end}.message.user{justify-content:flex-end}.bubble{max-width:84%;padding:11px 14px;border-radius:18px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45;font-size:14px;box-shadow:0 3px 10px #74445b0d}.assistant .bubble{background:#fff;border:1px solid var(--line);border-bottom-left-radius:5px}.user .bubble{background:linear-gradient(135deg,#f8b4d0,#ffd6e6);border-bottom-right-radius:5px}.bubble.error{border-color:#e5a0a0;background:#fff1f1;color:#9b3434}.time{font-size:10px;color:#a58d9a;margin:3px 5px 0}.message.user .time{text-align:right}
+.typing{display:none;color:var(--muted);font-size:13px;padding:6px 12px}.typing.show{display:block}
+.quick{display:flex;gap:7px;overflow-x:auto;padding:7px 1px 10px;scrollbar-width:none}.quick button{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:20px;padding:8px 12px;color:#805a70;font-size:12px}
+.composer{padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line);display:flex;align-items:flex-end;gap:7px}
+#messageInput{flex:1;min-height:43px;max-height:125px;resize:none;border:1px solid var(--line);border-radius:17px;padding:11px 13px;font:14px system-ui;outline:none;background:#fffafd;color:var(--ink)}#messageInput:focus{border-color:#e99bbb}
+.round{width:43px;height:43px;border:0;border-radius:15px;background:#ffe5ef;color:#78465f;font-size:18px;flex-shrink:0}.send{background:#ed8fb6;color:#fff;font-weight:800}
+.overlay{display:none;position:absolute;inset:0;background:#38233155;z-index:5}.overlay.open{display:block}.drawer{position:absolute;z-index:6;right:0;top:0;bottom:0;width:min(88%,390px);background:#fff8fb;box-shadow:-8px 0 30px #4b203322;transform:translateX(105%);transition:.22s;padding:18px;overflow:auto}.drawer.open{transform:translateX(0)}.drawerhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.drawer h2{font-size:20px;margin:0}.close{border:0;background:#ffe5ef;border-radius:12px;width:38px;height:38px;font-size:20px}
+.section{background:#fff;border:1px solid var(--line);border-radius:17px;padding:14px;margin:12px 0}.section h3{font-size:15px;margin:0 0 11px}.field{margin:10px 0}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:11px;padding:10px;font:14px system-ui;background:#fffafd;color:var(--ink)}.field textarea{min-height:100px;resize:vertical}
+.btn{border:0;border-radius:12px;padding:11px 14px;background:#ed91b7;color:white;font-weight:700;font-size:13px}.btn.secondary{background:#ffe5ef;color:#75465e}.btn.danger{background:#fff0f0;color:#a04454}.btnrow{display:flex;gap:8px;flex-wrap:wrap}.note{font-size:11px;color:var(--muted);line-height:1.5}
+#toast{position:absolute;z-index:10;bottom:90px;left:50%;transform:translate(-50%,15px);background:#503647;color:white;padding:10px 15px;border-radius:20px;font-size:12px;opacity:0;pointer-events:none;transition:.2s;max-width:90%;text-align:center}#toast.show{opacity:1;transform:translate(-50%,0)}
+@media(min-width:600px){.app{margin:18px;height:calc(100dvh - 36px);border-radius:24px}body{align-items:center}.composer{border-radius:0 0 24px 24px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<img class="avatar" src="images/Taiga.png" alt="Тайга" onerror="this.style.visibility='hidden'">
+<div class="headtxt"><h1>Taiga AI</h1><div class="status" id="status">♡ Готова поболтать</div></div>
+<button class="headbtn" id="newChat" title="Новый чат" aria-label="Новый чат">＋</button>
+<button class="headbtn" id="settings" title="Настройки" aria-label="Настройки">⚙</button>
+</header>
+<main id="chat">
+<div class="welcome" id="welcome"><img src="images/Taiga.png" alt="Тайга" onerror="this.style.visibility='hidden'"><h2>Чего уставился?!</h2><p>Я Тайга. Можешь говорить со мной о чём угодно… только не думай, что я скучала!</p></div>
+<div class="quick" id="quick">
+<button data-prompt="Привет, Тайга!">Привет!</button><button data-prompt="Расскажи что-нибудь о себе">Расскажи о себе</button><button data-prompt="Мне сегодня грустно">Мне грустно</button><button data-prompt="Давай поговорим">Поговорим</button>
+</div>
+<div id="messages"></div><div class="typing" id="typing">Тайга печатает…</div>
+</main>
+<div class="composer">
+<button class="round" id="mic" title="Голосовой ввод" aria-label="Голосовой ввод">🎙</button>
+<textarea id="messageInput" rows="1" placeholder="Напиши Тайге…"></textarea>
+<button class="round" id="voice" title="Озвучка вкл/выкл" aria-label="Озвучка вкл/выкл">🔈</button>
+<button class="round send" id="send" title="Отправить" aria-label="Отправить">➤</button>
+</div>
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer">
+<div class="drawerhead"><h2>Настройки Тайги</h2><button class="close" id="close" aria-label="Закрыть">×</button></div>
+<div class="section"><h3>Подключение</h3><p class="note">Taiga AI подключается к серверу. API-ключ хранится на сервере и в приложении не нужен.</p><button class="btn secondary" id="test">Проверить сервер</button></div>
+<div class="section"><h3>Характер Тайги</h3><div class="field"><label>Описание характера</label><textarea id="persona"></textarea></div><button class="btn" id="savePersona">Сохранить характер</button></div>
+<div class="section"><h3>Озвучка</h3><div class="field"><label>Голос устройства</label><select id="voiceSelect"></select></div><div class="field"><label>Скорость</label><input id="rate" type="range" min=".7" max="1.3" step=".05"></div><div class="btnrow"><button class="btn secondary" id="testVoice">Проверить голос</button><button class="btn secondary" id="toggleVoice">Вкл/выкл озвучку</button></div></div>
+<div class="section"><h3>История и память</h3><div class="btnrow"><button class="btn secondary" id="export">Экспорт чата</button><button class="btn danger" id="clear">Очистить чаты</button></div><p class="note">Переписки и настройки сохраняются только на этом устройстве.</p></div>
+</aside>
+<div id="toast" role="status" aria-live="polite"></div>
+</div>
+<script>
+const BASE = 'https://taiga-ai-server-1.onrender.com';
+const SERVER = BASE + '/chat';
+const DEFAULT_PERSONA = 'Ты — Тайга Айсака из Toradora. Общайся на русском языке в стиле эмоциональной аниме-цундере: гордая, вспыльчивая, ревнивая, смешная, но заботливая. Не будь грубой без причины. Можешь спокойно и без осуждения объяснять отношения, анатомию, сексуальное здоровье, контрацепцию, согласие и личные границы научно и понятно. Не выдумывай факты и признавай неопределённость.';
+const $ = id => document.getElementById(id);
+
+let chats = [];
+try {
+  const raw = JSON.parse(localStorage.getItem('taiga_chats_v2') || '[]');
+  chats = Array.isArray(raw) ? raw : [];
+} catch (e) { chats = []; }
+let currentId = chats[0]?.id || null;
+let persona = localStorage.getItem('taiga_persona') || DEFAULT_PERSONA;
+let voiceOn = localStorage.getItem('taiga_voice') === 'true';
+let voiceRate = Number(localStorage.getItem('taiga_voice_rate') || 1);
+let voiceName = localStorage.getItem('taiga_voice_name') || '';
+let busy = false, recognition = null;
+
+function save(){ localStorage.setItem('taiga_chats_v2', JSON.stringify(chats)); }
+function current(){ return chats.find(c => c.id === currentId); }
+
+function newChat(){
+  const c = { id: String(Date.now()), title: 'Новый разговор', messages: [] };
+  chats.unshift(c);
+  currentId = c.id;
+  save();
+  render();
+  $('messageInput').focus();
+}
+
+function toast(s){
+  const t = $('toast');
+  t.textContent = s;
+  t.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.remove('show'), 2300);
+}
+
+function render(){
+  const c = current();
+  $('messages').innerHTML = '';
+  $('welcome').style.display = c && c.messages.length ? 'none' : 'block';
+  $('quick').style.display = c && c.messages.length ? 'none' : 'flex';
+  if (!c) return;
+  c.messages.forEach(m => {
+    const wrap = document.createElement('div');
+    wrap.className = 'message ' + (m.role === 'user' ? 'user' : 'assistant');
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble' + (m.error ? ' error' : '');
+    bubble.textContent = m.content;
+    const col = document.createElement('div');
+    col.appendChild(bubble);
+    const time = document.createElement('div');
+    time.className = 'time';
+    time.textContent = new Date(m.at || Date.now()).toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+    col.appendChild(time);
+    wrap.appendChild(col);
+    $('messages').appendChild(wrap);
+  });
+  $('chat').scrollTop = $('chat').scrollHeight;
+}
+
+function add(role, content, error = false){
+  const c = current();
+  if (!c) return;
+  c.messages.push({ role, content, error, at: Date.now() });
+  if (role === 'user' && c.title === 'Новый разговор') c.title = content.slice(0, 32);
+  if (c.messages.length > 100) c.messages = c.messages.slice(-100);
+  save();
+  render();
+}
+
+async function send(text){
+  if (busy) return;
+  const value = (text ?? $('messageInput').value).trim();
+  if (!value) return;
+  if (!current()) newChat();
+
+  busy = true;
+  $('send').disabled = true;
+  $('messageInput').value = '';
+  $('messageInput').style.height = 'auto';
+  add('user', value);
+  $('typing').classList.add('show');
+  $('status').textContent = '♡ Думает…';
+
+  try {
+    const c = current();
+    const history = c.messages
+      .filter(m => !m.error)                          // фикс: не отправляем битые ответы
+      .slice(-24)
+      .map(m => ({ role: m.role, content: m.content }));
+    const sys = persona + '\n\nПравила: отвечай на русском, если пользователь не попросил другой язык. Учитывай историю переписки. Не заявляй, что помнишь то, чего нет в переданной истории. Будь естественной и не слишком многословной.';
+    const r = await fetch(SERVER, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [{ role: 'system', content: sys }, ...history] })
+    });
+    let data = {};
+    try { data = await r.json(); } catch (e) {}
+    if (!r.ok) throw new Error(data.error || 'Ошибка сервера HTTP ' + r.status);
+    const answer = (data.reply || '').trim();
+    if (!answer) throw new Error('Сервер вернул пустой ответ');
+    add('assistant', answer);
+    if (voiceOn) speak(answer);
+    $('status').textContent = '♡ Готова поболтать';
+  } catch (e) {
+    add('assistant', 'Не получилось получить ответ: ' + e.message, true);
+    $('status').textContent = '♡ Ошибка соединения';
+  } finally {
+    busy = false;
+    $('send').disabled = false;
+    $('typing').classList.remove('show');
+    $('messageInput').focus();
+  }
+}
+
+function openSettings(){
+  $('persona').value = persona;
+  $('rate').value = voiceRate;
+  populateVoices();
+  $('overlay').classList.add('open');
+  $('drawer').classList.add('open');
+}
+function closeSettings(){
+  $('overlay').classList.remove('open');
+  $('drawer').classList.remove('open');
+}
+
+function populateVoices(){
+  if (!('speechSynthesis' in window)) return;
+  const list = speechSynthesis.getVoices();
+  if (!list.length) { setTimeout(populateVoices, 300); return; }
+  const sel = $('voiceSelect');
+  sel.innerHTML = '';
+  list.forEach(v => {
+    const o = document.createElement('option');
+    o.value = v.name;
+    o.textContent = v.name + ' (' + v.lang + ')';
+    sel.appendChild(o);
+  });
+  sel.value = voiceName;
+}
+
+function speak(text){
+  if (!('speechSynthesis' in window)) { toast('Озвучка не поддерживается'); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ru-RU';
+  u.rate = voiceRate;
+  const list = speechSynthesis.getVoices();
+  const v = list.find(x => x.name === voiceName) || list.find(x => x.lang.toLowerCase().startsWith('ru'));
+  if (v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+
+function updateVoiceIcon(){
+  $('voice').textContent = voiceOn ? '🔊' : '🔈';
+}
+
+$('send').onclick = () => send();
+$('messageInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
+$('messageInput').addEventListener('input', e => {
+  e.target.style.height = 'auto';
+  e.target.style.height = Math.min(e.target.scrollHeight, 125) + 'px';
+});
+
+$('newChat').onclick = newChat;
+$('settings').onclick = openSettings;
+$('close').onclick = closeSettings;
+$('overlay').onclick = closeSettings;
+$('quick').querySelectorAll('button').forEach(b => b.onclick = () => send(b.dataset.prompt));
+
+$('savePersona').onclick = () => {
+  persona = $('persona').value.trim() || DEFAULT_PERSONA;
+  localStorage.setItem('taiga_persona', persona);
+  toast('Характер сохранён');
+};
+$('rate').oninput = () => {
+  voiceRate = Number($('rate').value);
+  localStorage.setItem('taiga_voice_rate', voiceRate);
+};
+$('voiceSelect').onchange = () => {
+  voiceName = $('voiceSelect').value;
+  localStorage.setItem('taiga_voice_name', voiceName);
+};
+$('testVoice').onclick = () => speak('Эй! Не смотри на меня так долго. Чего хотел?');
+$('toggleVoice').onclick = () => {
+  voiceOn = !voiceOn;
+  localStorage.setItem('taiga_voice', voiceOn);
+  updateVoiceIcon();
+  toast(voiceOn ? 'Озвучка включена' : 'Озвучка выключена');
+};
+$('voice').onclick = () => $('toggleVoice').click();
+
+$('test').onclick = async () => {
+  const b = $('test');
+  b.disabled = true;
+  b.textContent = 'Проверяю…';
+  try {
+    const r = await fetch(BASE + '/');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    let d = null;
+    try { d = await r.json(); } catch (e) {}
+    toast(d && d.status === 'online' ? 'Сервер работает!' : 'Сервер ответил');
+  } catch (e) {
+    toast('Сервер недоступен: ' + e.message);
+  } finally {
+    b.disabled = false;
+    b.textContent = 'Проверить сервер';
+  }
+};
+
+$('clear').onclick = () => {
+  if (confirm('Удалить все чаты на этом устройстве?')) {
+    chats = [];
+    currentId = null;
+    save();
+    newChat();
+    toast('Чаты очищены');
+  }
+};
+
+$('export').onclick = () => {
+  const blob = new Blob([JSON.stringify(chats, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'taiga-chats.json';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+$('mic').onclick = () => {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { toast('Голосовой ввод недоступен. Попробуй Chrome.'); return; }
+  if (recognition) { recognition.stop(); recognition = null; return; }
+  recognition = new SR();
+  recognition.lang = 'ru-RU';
+  recognition.interimResults = false;
+  recognition.onresult = e => {
+    $('messageInput').value = ($('messageInput').value + ' ' + e.results[0][0].transcript).trim();
+  };
+  recognition.onerror = e => toast('Микрофон: ' + e.error);
+  recognition.onend = () => recognition = null;
+  recognition.start();
+};
+
+// init
+if (!current()) newChat(); else render();
+updateVoiceIcon();
+if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = populateVoices;
+</script>
+</body>
+  </html>
