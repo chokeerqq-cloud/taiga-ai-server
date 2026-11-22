@@ -1,139 +1,30 @@
-
-const express = require("express");
-const cors = require("cors");
-
-const app = express();
-
-app.set("trust proxy", 1);
-app.use(cors());
-app.use(express.json({ limit: "1mb" }));
-
-const PORT = process.env.PORT || 3000;
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
-
-// Ограничение: 10 запросов в минуту с одного IP
-const requests = new Map();
-
-app.use("/chat", (req, res, next) => {
-  const ip = req.ip;
-  const now = Date.now();
-  const record = requests.get(ip);
-
-  if (!record || now - record.start >= 60000) {
-    requests.set(ip, { start: now, count: 1 });
-    return next();
-  }
-
-  if (record.count >= 10) {
-    return res.status(429).json({
-      error: "Too many requests. Try again later."
-    });
-  }
-
-  record.count++;
-  next();
-});
-
-// Удаляем устаревшие записи
-app.use((req, res, next) => {
-  const now = Date.now();
-
-  for (const [ip, record] of requests) {
-    if (now - record.start >= 60000) {
-      requests.delete(ip);
-    }
-  }
-
-  next();
-});
-
-app.get("/", (req, res) => {
-  res.json({
-    name: "Taiga AI Server",
-    status: "online",
-    version: "1.1.0"
-  });
-});
-
 app.post("/chat", async (req, res) => {
-  try {
-    if (!GROQ_API_KEY) {
-      return res.status(500).json({
-        error: "Server API key is not configured"
-      });
-    }
+  const { message, image, history } = req.body;
 
-    const messages = req.body?.messages;
+  const userContent = [];
+  if (message) userContent.push({ type: "text", text: message });
+  if (image) userContent.push({
+    type: "image_url",
+    image_url: { url: "data:image/jpeg;base64," + image }
+  });
 
-    if (!Array.isArray(messages) || messages.length === 0) {
-      return res.status(400).json({
-        error: "Messages are required"
-      });
-    }
+  const messages = [
+    { role: "system", content: "Ты Тайга Айсака, отвечай по-русски." },
+    ...(history || []).map(h => ({ role: h.role, content: h.content })),
+    { role: "user", content: image ? userContent : (message || "") }
+  ];
 
-    if (messages.length > 40) {
-      return res.status(400).json({
-        error: "Too many messages"
-      });
-    }
-
-    const safeMessages = [];
-
-    for (const message of messages) {
-      if (
-        !message ||
-        !["system", "user", "assistant"].includes(message.role) ||
-        typeof message.content !== "string"
-      ) {
-        return res.status(400).json({
-          error: "Invalid message format"
-        });
-      }
-
-      safeMessages.push({
-        role: message.role,
-        content: message.content.slice(0, 12000)
-      });
-    }
-
-    const response = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${GROQ_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: "openai/gpt-oss-120b",
-          messages: safeMessages,
-          temperature: 0.7,
-          max_tokens: 900
-        })
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return res.status(response.status).json({
-        error: data.error?.message || "Groq API error"
-      });
-    }
-
-    res.json({
-      reply: data.choices?.[0]?.message?.content || ""
-    });
-
-  } catch (error) {
-    console.error("Taiga server error:", error.message);
-
-    res.status(500).json({
-      error: "Internal server error"
-    });
-  }
-});
-
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Taiga AI server running on port ${PORT}`);
+  const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer " + process.env.GROQ_API_KEY,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: "qwen/qwen3.8-27b",   // модель со зрением
+      messages: messages
+    })
+  });
+  const data = await r.json();
+  res.json({ reply: data.choices?.[0]?.message?.content || "" });
 });
