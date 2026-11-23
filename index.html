@@ -1,396 +1,5939 @@
 <!DOCTYPE html>
-<html lang="ru" dir="ltr">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#121212">
-<title>Taiga AI</title>
-<link rel="manifest" href="manifest.json">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#100d18">
+<meta name="description" content="Taiga AI Pro — твой аниме-компаньон">
+<title>Taiga AI Pro 2.0</title>
+
 <style>
-  :root {
-    color-scheme: dark;
-    --bg: #121212;
-    --panel: #1e1e1e;
-    --panel-2: #2a2a2a;
-    --text: #e0e0e0;
-    --muted: #9a9a9a;
-    --accent: #3b82f6;
-    --user: #2563eb;
-    --ai: #2a2a2a;
+
+:root {
+  color-scheme: dark;
+  --bg: #100d18;
+  --bg-soft: #15111f;
+  --panel: #191523;
+  --panel-2: #211b2c;
+  --panel-3: #292236;
+  --text: #faf5ff;
+  --muted: #a49aaf;
+  --subtle: #756b80;
+  --pink: #ff83ba;
+  --pink-2: #e65e9f;
+  --violet: #a78bfa;
+  --blue: #8cafff;
+  --green: #79dba7;
+  --red: #ff7189;
+  --yellow: #f5cf82;
+  --line: #ffffff13;
+  --line-strong: #ffffff25;
+  --shadow: 0 22px 70px #0008;
+  --radius: 18px;
+  --radius-lg: 25px;
+  --sidebar-width: 285px;
+  --base-font-size: 15px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 78% -10%, #a35ca52a, transparent 42%),
+    radial-gradient(ellipse at -10% 90%, #d84f9120, transparent 38%),
+    var(--bg);
+  color: var(--text);
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+  font-size: var(--base-font-size);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
+input,
+textarea,
+select {
+  color: var(--text);
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--pink);
+  outline-offset: 3px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* APP LAYOUT */
+
+.app {
+  width: 100%;
+  height: 100dvh;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  flex: 0 0 var(--sidebar-width);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 15px 14px;
+  background: #100d18d9;
+  border-right: 1px solid var(--line);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  z-index: 30;
+  transition: transform .25s ease;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px 23px;
+}
+
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  color: #241320;
+  font-size: 23px;
+  font-weight: 900;
+  background: linear-gradient(140deg, #ffacd0, #ad91ff);
+  box-shadow: 0 8px 28px #d85c9b42;
+}
+
+.brand-name {
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: -.4px;
+}
+
+.brand-version {
+  display: block;
+  margin-top: 1px;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+
+.primary-button {
+  min-height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 11px 15px;
+  border: 0;
+  border-radius: 15px;
+  color: #241321;
+  font-weight: 850;
+  background: linear-gradient(110deg, #ff91bd, #ae91ff);
+  box-shadow: 0 8px 25px #d95d9b30;
+  transition: transform .18s, filter .18s;
+}
+
+.primary-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.07);
+}
+
+.primary-button:active {
+  transform: scale(.98);
+}
+
+.side-section-title {
+  padding: 23px 9px 9px;
+  color: var(--subtle);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.side-search {
+  position: relative;
+  margin-top: 14px;
+}
+
+.side-search input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px 0 36px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  outline: 0;
+  background: #ffffff07;
+  font-size: 12px;
+}
+
+.side-search input:focus {
+  border-color: #ff83ba70;
+}
+
+.side-search-icon {
+  position: absolute;
+  top: 9px;
+  left: 12px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.chat-list {
+  flex: 1;
+  min-height: 70px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 2px 2px 12px;
+}
+
+.chat-list::-webkit-scrollbar,
+.main-scroll::-webkit-scrollbar,
+.modal-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.chat-list::-webkit-scrollbar-thumb,
+.main-scroll::-webkit-scrollbar-thumb,
+.modal-body::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #ffffff20;
+}
+
+.chat-item {
+  width: 100%;
+  min-height: 43px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 3px 0;
+  padding: 9px 10px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: #bcb3c7;
+  text-align: left;
+  font-size: 12px;
+  transition: .16s;
+}
+
+.chat-item:hover {
+  background: #ffffff0a;
+  color: white;
+}
+
+.chat-item.active {
+  color: white;
+  background: linear-gradient(100deg, #ff83ba16, #a78bfa16);
+  border-color: #ff83ba20;
+}
+
+.chat-item-icon {
+  flex: 0 0 18px;
+  color: var(--pink);
+  text-align: center;
+}
+
+.chat-item-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.chat-item-menu {
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  opacity: 0;
+}
+
+.chat-item:hover .chat-item-menu,
+.chat-item-menu:focus-visible {
+  opacity: 1;
+}
+
+.chat-item-menu:hover {
+  background: #ffffff16;
+  color: white;
+}
+
+.sidebar-bottom {
+  flex: 0 0 auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.side-link {
+  width: 100%;
+  min-height: 41px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 11px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #bcb3c7;
+  text-align: left;
+  font-size: 12px;
+}
+
+.side-link:hover {
+  color: white;
+  background: #ffffff0c;
+}
+
+.side-link.donate-link {
+  color: #ff9ac5;
+}
+
+.profile-mini {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 11px;
+  padding: 12px 8px 3px;
+}
+
+.profile-avatar {
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 37px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #f6a2ca, #a78bfa);
+  color: #251423;
+  font-weight: 900;
+}
+
+.profile-name {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.profile-subtitle {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+/* MAIN */
+
+.main {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  height: 66px;
+  flex: 0 0 66px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--line);
+  background: #100d1870;
+  backdrop-filter: blur(18px);
+  z-index: 5;
+}
+
+.topbar-left,
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-title {
+  max-width: min(48vw, 430px);
+  overflow: hidden;
+  color: #f6effb;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 2px;
+  color: var(--green);
+  font-size: 10px;
+}
+
+.connection-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 9px currentColor;
+}
+
+.icon-button {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: #ffffff08;
+  color: #cfc5d8;
+  font-size: 17px;
+  transition: .16s;
+}
+
+.icon-button:hover {
+  color: white;
+  background: #ffffff16;
+  border-color: var(--line-strong);
+}
+
+.mobile-menu {
+  display: none;
+}
+
+/* CHAT AREA */
+
+.main-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 26px 18px 190px;
+  scroll-behavior: smooth;
+}
+
+.messages {
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.welcome {
+  padding: clamp(55px, 11vh, 120px) 12px 30px;
+  text-align: center;
+}
+
+.welcome-orb {
+  width: 88px;
+  height: 88px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 23px;
+  border: 1px solid #ffffff1d;
+  border-radius: 30px;
+  background: linear-gradient(140deg, #ff83ba26, #a78bfa30);
+  box-shadow: 0 0 65px #d66ba51d;
+  font-size: 43px;
+  transform: rotate(-5deg);
+}
+
+.welcome h1 {
+  margin: 0 0 12px;
+  font-size: clamp(32px, 5vw, 47px);
+  font-weight: 900;
+  letter-spacing: -1.9px;
+  line-height: 1.12;
+}
+
+.gradient-text {
+  color: transparent;
+  background: linear-gradient(90deg, #ff9bc8, #c3a5ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.welcome-description {
+  max-width: 470px;
+  margin: 0 auto 27px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.quick-prompts {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.quick-prompt {
+  min-height: 38px;
+  padding: 9px 14px;
+  border: 1px solid #ffffff19;
+  border-radius: 99px;
+  background: #ffffff08;
+  color: #ded5e8;
+  font-size: 11px;
+  transition: .16s;
+}
+
+.quick-prompt:hover {
+  border-color: #ff83ba70;
+  background: #ff83ba13;
+}
+
+/* MESSAGES */
+
+.message {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  max-width: 790px;
+  margin: 23px auto;
+  animation: message-in .2s ease both;
+}
+
+.message.user {
+  flex-direction: row-reverse;
+}
+
+.message-avatar {
+  width: 35px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 35px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #f4a0c6, #9e85ff);
+  color: #251421;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.message.user .message-avatar {
+  background: #302a3a;
+  color: #e5d9ee;
+}
+
+.message-body {
+  min-width: 0;
+  max-width: min(86%, 680px);
+}
+
+.message-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 8px 5px;
+  color: var(--subtle);
+  font-size: 10px;
+}
+
+.message.user .message-meta {
+  justify-content: flex-end;
+}
+
+.message-bubble {
+  padding: 13px 16px;
+  border: 1px solid #ffffff0d;
+  border-radius: 4px 19px 19px 19px;
+  background: #ffffff0b;
+  color: #f1eaf7;
+  font-size: var(--base-font-size);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.message.user .message-bubble {
+  border-color: #e68db51f;
+  border-radius: 19px 4px 19px 19px;
+  background: linear-gradient(130deg, #d96e9b30, #8b79d52b);
+}
+
+.message-bubble a {
+  color: #ffacd0;
+}
+
+.message-bubble pre {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 13px;
+  border-radius: 12px;
+  background: #08070d;
+  font-size: 12px;
+}
+
+.message-bubble code {
+  font-family: "SFMono-Regular", Consolas, monospace;
+}
+
+.message-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 7px 4px 0;
+  opacity: .65;
+}
+
+.message:hover .message-actions {
+  opacity: 1;
+}
+
+.message-action {
+  min-width: 29px;
+  height: 27px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.message-action:hover {
+  background: #ffffff12;
+  color: white;
+}
+
+.message-status {
+  color: var(--subtle);
+  font-size: 10px;
+}
+
+/* COMPOSER */
+
+.composer-dock {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 8;
+  padding: 23px 20px calc(15px + var(--safe-bottom));
+  background: linear-gradient(180deg, transparent, #100d18 26%);
+}
+
+.composer-wrap {
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.attachment-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 9px;
+}
+
+.attachment-item {
+  position: relative;
+  width: 65px;
+  height: 65px;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--panel-2);
+}
+
+.attachment-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.attachment-remove {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 21px;
+  height: 21px;
+  border: 0;
+  border-radius: 50%;
+  background: #130e1bd9;
+  color: white;
+}
+
+.composer {
+  padding: 11px 12px 9px;
+  border: 1px solid #ffffff20;
+  border-radius: 24px;
+  background: #1b1925ed;
+  box-shadow: 0 18px 55px #0008;
+  backdrop-filter: blur(22px);
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.composer:focus-within {
+  border-color: #ee83b77a;
+  box-shadow: 0 0 0 4px #e875a00c, 0 18px 55px #0008;
+}
+
+.composer textarea {
+  width: 100%;
+  min-height: 39px;
+  max-height: 155px;
+  display: block;
+  resize: none;
+  padding: 7px 8px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: white;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.composer textarea::placeholder {
+  color: #81778e;
+}
+
+.composer-tools {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tool-button {
+  width: 35px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #b4aabd;
+  font-size: 17px;
+  transition: .15s;
+}
+
+.tool-button:hover {
+  background: #ffffff12;
+  color: white;
+}
+
+.provider-chip {
+  max-width: 42%;
+  overflow: hidden;
+  margin-left: auto;
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: #ffffff08;
+  color: #d6cddd;
+  font-size: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.send-button {
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 37px;
+  border: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff92bf, #a68aff);
+  color: #241321;
+  font-size: 18px;
+  font-weight: 900;
+  box-shadow: 0 5px 17px #db73a63a;
+}
+
+.send-button.stop {
+  background: linear-gradient(135deg, #ff8290, #ed6485);
+}
+
+.composer-hint {
+  margin-top: 8px;
+  color: #746b7d;
+  font-size: 9px;
+  text-align: center;
+}
+
+/* GENERAL MODALS */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  background: #050409c9;
+  backdrop-filter: blur(9px);
+}
+
+.modal-backdrop.show {
+  display: flex;
+  animation: fade-in .15s ease;
+}
+
+.modal {
+  width: min(550px, 100%);
+  max-height: min(88dvh, 850px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #ffffff1b;
+  border-radius: 25px;
+  background: #191522;
+  box-shadow: var(--shadow);
+  animation: modal-in .2s ease;
+}
+
+.modal.wide {
+  width: min(760px, 100%);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 19px 21px;
+  border-bottom: 1px solid var(--line);
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 850;
+}
+
+.modal-close {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: #ffffff0b;
+  color: #c9bfd2;
+  font-size: 21px;
+}
+
+.modal-close:hover {
+  background: #ffffff18;
+  color: white;
+}
+
+.modal-body {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 19px 21px 22px;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 9px;
+  padding: 14px 21px;
+  border-top: 1px solid var(--line);
+}
+
+.modal-footer .primary-button {
+  flex: 1;
+}
+
+.secondary-button {
+  min-height: 42px;
+  padding: 9px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 13px;
+  background: #ffffff08;
+  color: #ddd3e7;
+  font-size: 12px;
+}
+
+.secondary-button:hover {
+  background: #ffffff13;
+}
+
+/* SETTINGS FIELDS */
+
+.settings-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  margin: 0 0 18px;
+  padding-bottom: 5px;
+}
+
+.settings-tab {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 99px;
+  background: #ffffff08;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.settings-tab.active {
+  border-color: #ff83ba45;
+  background: #ff83ba15;
+  color: #ffc0dc;
+}
+
+.field {
+  margin: 0 0 16px;
+}
+
+.field label {
+  display: block;
+  margin: 0 0 7px;
+  color: #c6bbd1;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  min-height: 43px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  outline: 0;
+  background: #24202e;
+  color: white;
+  font-size: 12px;
+}
+
+.field textarea {
+  min-height: 95px;
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  border-color: #ff83ba80;
+}
+
+.field-help {
+  margin-top: 6px;
+  color: var(--subtle);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.setting-row:last-child {
+  border-bottom: 0;
+}
+
+.setting-row-title {
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.setting-row-description {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.toggle {
+  position: relative;
+  width: 43px;
+  height: 24px;
+  flex: 0 0 43px;
+  border: 0;
+  border-radius: 99px;
+  background: #474050;
+  transition: background .2s;
+}
+
+.toggle::after {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  content: "";
+  transition: transform .2s;
+}
+
+.toggle[aria-checked="true"] {
+  background: linear-gradient(90deg, #f17eae, #a78bfa);
+}
+
+.toggle[aria-checked="true"]::after {
+  transform: translateX(19px);
+}
+
+/* DONATION */
+
+.donation-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 22px;
+  border: 1px solid #ff83ba27;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 100% 0%, #a78bfa25, transparent 48%),
+    linear-gradient(130deg, #ff83ba15, #a78bfa12);
+}
+
+.donation-title {
+  margin: 0 0 7px;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.donation-description {
+  max-width: 390px;
+  margin: 0;
+  color: #c2b6ce;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.donation-heart {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  color: #ff91c0;
+  font-size: 45px;
+  filter: drop-shadow(0 0 18px #ff83ba60);
+}
+
+.donation-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin: 18px 0;
+}
+
+.donation-option {
+  min-height: 48px;
+  border: 1px solid var(--line-strong);
+  border-radius: 13px;
+  background: #ffffff08;
+  color: #eee4f4;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.donation-option:hover,
+.donation-option.selected {
+  border-color: #ff83ba80;
+  background: #ff83ba19;
+  color: #ffb8d5;
+}
+
+.donation-note {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+/* TOAST AND OVERLAYS */
+
+.toast-stack {
+  position: fixed;
+  right: 16px;
+  bottom: calc(18px + var(--safe-bottom));
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 11px 15px;
+  border: 1px solid var(--line-strong);
+  border-radius: 13px;
+  background: #282232ed;
+  color: #f4edf8;
+  box-shadow: 0 12px 35px #0008;
+  font-size: 11px;
+  animation: toast-in .2s ease both;
+}
+
+.toast.error {
+  border-color: #ff718955;
+}
+
+.toast.success {
+  border-color: #79dba755;
+}
+
+.loading-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 18px;
+}
+
+.loading-dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--pink);
+  animation: dot-bounce .8s infinite alternate;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: .2s;
+}
+
+.loading-dots span:nth-child(3) {
+  animation-delay: .4s;
+}
+
+.empty-state {
+  padding: 28px 12px;
+  color: var(--subtle);
+  font-size: 11px;
+  text-align: center;
+}
+
+.divider {
+  height: 1px;
+  margin: 17px 0;
+  background: var(--line);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.badge.pink {
+  border-color: #ff83ba38;
+  background: #ff83ba12;
+  color: #ffadd0;
+}
+
+.badge.green {
+  border-color: #79dba738;
+  background: #79dba712;
+  color: #8be6b4;
+}
+
+/* THEMES */
+body[data-theme="pink"] {
+  --bg: #190f19;
+  --bg-soft: #211322;
+  --panel: #28182a;
+  --panel-2: #342039;
+  --panel-3: #412746;
+  --pink: #ff9fce;
+  --pink-2: #ed70ad;
+}
+body[data-theme="midnight"] {
+  --bg: #0b1020;
+  --bg-soft: #10182b;
+  --panel: #151e34;
+  --panel-2: #1c2943;
+  --panel-3: #263653;
+  --pink: #a9a5ff;
+  --pink-2: #8580e8;
+}
+body[data-theme="pink"] .app,
+body[data-theme="midnight"] .app { background-color: var(--bg); }
+
+/* ANIMATIONS */
+
+@keyframes message-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(10px) scale(.985); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes dot-bounce {
+  from { opacity: .35; transform: translateY(0); }
+  to { opacity: 1; transform: translateY(-4px); }
+}
+
+/* MOBILE */
+
+@media (max-width: 760px) {
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(300px, 88vw);
+    transform: translateX(-105%);
+    box-shadow: 15px 0 60px #0009;
   }
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0; padding: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    height: 100%;
+
+  .sidebar.open {
+    transform: translateX(0);
   }
-  body {
-    display: flex;
-    flex-direction: column;
-    height: 100dvh;
+
+  .mobile-menu {
+    display: grid;
   }
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    background: var(--panel);
-    border-bottom: 1px solid #000;
-    flex-shrink: 0;
+
+  .topbar {
+    height: 60px;
+    flex-basis: 60px;
+    padding: 0 12px;
   }
-  header h1 { font-size: 18px; margin: 0; }
-  header .voice-wrap {
-    display: flex; align-items: center; gap: 6px;
+
+  .topbar-title {
+    max-width: 46vw;
   }
-  header select {
-    background: var(--panel-2);
-    color: var(--text);
-    border: 1px solid #444;
-    border-radius: 8px;
-    padding: 6px 8px;
-    font-size: 12px;
-    max-width: 150px;
+
+  .main-scroll {
+    padding: 17px 11px 175px;
   }
-  #chat {
-    flex: 1;
-    overflow-y: auto;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+
+  .welcome {
+    padding-top: 9vh;
   }
-  .msg {
-    max-width: 85%;
-    padding: 10px 12px;
-    border-radius: 14px;
-    line-height: 1.4;
-    font-size: 15px;
-    word-wrap: break-word;
-    white-space: pre-wrap;
+
+  .welcome h1 {
+    font-size: 34px;
   }
-  .msg.user {
-    align-self: flex-end;
-    background: var(--user);
-    color: #fff;
-    border-bottom-right-radius: 4px;
-  }
-  .msg.ai {
-    align-self: flex-start;
-    background: var(--ai);
-    border-bottom-left-radius: 4px;
-  }
-  .msg img {
-    display: block;
-    max-width: 100%;
-    border-radius: 10px;
-    margin-bottom: 6px;
-  }
-  .msg .speak {
-    display: inline-block;
-    margin-top: 6px;
-    font-size: 11px;
-    color: var(--muted);
-    cursor: pointer;
-    user-select: none;
-  }
-  .msg .speak:hover { color: var(--accent); }
-  #preview {
-    display: none;
-    padding: 8px 12px 0;
-    background: var(--panel);
-  }
-  #preview.show { display: block; }
-  #preview .thumb-wrap {
-    position: relative;
-    display: inline-block;
-  }
-  #preview img {
-    height: 70px;
-    border-radius: 8px;
-    border: 1px solid #444;
-  }
-  #preview .remove {
-    position: absolute;
-    top: -6px; right: -6px;
-    background: #e11d48;
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    width: 20px; height: 20px;
-    font-size: 12px;
-    cursor: pointer;
-  }
-  footer {
-    display: flex;
-    align-items: center;
+
+  .message {
     gap: 8px;
-    padding: 10px 12px;
-    background: var(--panel);
-    border-top: 1px solid #000;
-    flex-shrink: 0;
+    margin: 18px auto;
   }
-  footer .icon-btn {
-    background: var(--panel-2);
-    color: var(--text);
-    border: 1px solid #444;
-    border-radius: 10px;
-    width: 44px; height: 44px;
-    font-size: 20px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
+
+  .message-avatar {
+    width: 31px;
+    height: 31px;
+    flex-basis: 31px;
+    font-size: 10px;
   }
-  #input {
-    flex: 1;
-    background: var(--panel-2);
-    color: var(--text);
-    border: 1px solid #444;
-    border-radius: 12px;
-    padding: 12px;
-    font-size: 15px;
-    resize: none;
-    max-height: 120px;
-    min-height: 44px;
-    font-family: inherit;
+
+  .message-body {
+    max-width: 90%;
   }
-  #send {
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 0 18px;
-    height: 44px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    flex-shrink: 0;
+
+  .message-bubble {
+    padding: 11px 13px;
   }
-  #send:disabled { opacity: 0.5; cursor: default; }
-  #file { display: none; }
-  .typing { color: var(--muted); font-style: italic; }
+
+  .composer-dock {
+    padding: 13px 10px calc(10px + var(--safe-bottom));
+  }
+
+  .composer {
+    border-radius: 21px;
+  }
+
+  .provider-chip {
+    max-width: 34%;
+    font-size: 9px;
+  }
+
+  .composer-hint {
+    font-size: 8px;
+  }
+
+  .modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal {
+    width: 100%;
+    max-height: 91dvh;
+    border-radius: 24px 24px 0 0;
+    padding-bottom: var(--safe-bottom);
+  }
+
+  .donation-options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 380px) {
+  .topbar-right .icon-button:nth-child(n+3) {
+    display: none;
+  }
+
+  .quick-prompt {
+    padding: 8px 11px;
+    font-size: 10px;
+  }
+
+  .tool-button {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* DISCORD-LIKE COMMUNITY HUB */
+#communityHub{position:fixed;inset:0;z-index:1000;display:none;background:#111019;color:#f7f2ff;font-family:Inter,"Segoe UI",system-ui,sans-serif}
+#communityHub.open{display:grid;grid-template-columns:72px 245px minmax(0,1fr) 210px;grid-template-rows:62px minmax(0,1fr)}
+.hub-rail{grid-row:1/3;background:#0d0b13;border-right:1px solid #ffffff12;display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 8px}
+.hub-logo,.hub-server{width:46px;height:46px;border:0;border-radius:17px;background:#292235;color:#fff;font-weight:900;font-size:18px;cursor:pointer;transition:.18s}
+.hub-logo{background:linear-gradient(140deg,#ff91bd,#ae91ff);color:#241321}
+.hub-server.active,.hub-server:hover{border-radius:13px;background:#e879b0}
+.hub-rail-sep{width:30px;height:2px;background:#ffffff20}
+.hub-channels{grid-column:2;grid-row:1/3;background:#171420;border-right:1px solid #ffffff12;display:flex;flex-direction:column;min-height:0}
+.hub-server-head{padding:20px 16px 14px;font-weight:850;border-bottom:1px solid #ffffff12;display:flex;justify-content:space-between;align-items:center}
+.hub-server-head button,.hub-channel-add{border:0;background:transparent;color:#c9bdd7;font-size:19px;cursor:pointer}
+.hub-nav{padding:12px 9px 5px}
+.hub-nav button,.hub-channel{width:100%;border:0;border-radius:9px;background:transparent;color:#bdb3ca;text-align:left;padding:10px 12px;cursor:pointer;font-size:13px}
+.hub-nav button:hover,.hub-channel:hover,.hub-channel.active{background:#ffffff10;color:#fff}
+.hub-category{padding:17px 14px 5px;color:#80768e;font-size:10px;font-weight:850;letter-spacing:1.3px;text-transform:uppercase;display:flex;justify-content:space-between}
+.hub-channel-list{overflow:auto;padding:0 8px 15px}
+.hub-channel .hash{color:#92869f;margin-right:8px}
+.hub-channel.voice .hash{color:#80cfa7}
+.hub-profile{margin-top:auto;border-top:1px solid #ffffff12;padding:12px;display:flex;align-items:center;gap:9px;font-size:12px}
+.hub-avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(140deg,#ff91bd,#ae91ff);color:#251521;font-weight:900;flex-shrink:0}
+.hub-profile small{display:block;color:#9e93ab}
+.hub-top{grid-column:3/5;grid-row:1;background:#171420;border-bottom:1px solid #ffffff12;display:flex;align-items:center;justify-content:space-between;padding:0 20px;min-width:0}
+.hub-top-title{font-weight:800}.hub-top-actions{display:flex;gap:8px}
+.hub-top-actions button,.hub-close{border:0;background:#ffffff0c;color:#eee;border-radius:9px;padding:8px 11px;cursor:pointer}
+.hub-main{grid-column:3;grid-row:2;display:flex;flex-direction:column;min-width:0;min-height:0}
+.hub-welcome{margin:auto;text-align:center;max-width:460px;padding:24px;color:#bdb3ca}
+.hub-welcome strong{display:block;color:#fff;font-size:22px;margin-bottom:8px}
+.hub-messages{flex:1;overflow:auto;padding:22px 24px 10px}
+.hub-message{display:flex;gap:12px;padding:9px 0;border-radius:8px}
+.hub-message:hover{background:#ffffff05}
+.hub-message-body{min-width:0;flex:1}
+.hub-message-head{font-size:12px;font-weight:800;margin-bottom:3px}
+.hub-message-head time{font-weight:400;color:#82788e;margin-left:8px}
+.hub-message-text{font-size:13px;color:#e2dce9;white-space:pre-wrap;overflow-wrap:anywhere}
+.hub-reactions{display:flex;gap:5px;margin-top:6px}
+.hub-reactions button{border:1px solid #ffffff18;background:#ffffff08;border-radius:20px;color:#d8cde2;padding:2px 8px;cursor:pointer;font-size:11px}
+.hub-composer{display:flex;gap:8px;padding:15px 20px 20px}
+.hub-composer input{flex:1;min-width:0;border:1px solid #ffffff15;background:#252031;color:#fff;border-radius:12px;padding:13px 14px;outline:none}
+.hub-composer button{border:0;border-radius:11px;padding:0 17px;background:linear-gradient(120deg,#ff91bd,#ae91ff);color:#261521;font-weight:900}
+.hub-members{grid-column:4;grid-row:2;background:#171420;border-left:1px solid #ffffff12;padding:18px 12px;overflow:auto}
+.hub-members h4{font-size:10px;color:#82788e;letter-spacing:1.2px;margin:0 0 12px}
+.hub-member{display:flex;align-items:center;gap:9px;padding:7px 4px;color:#cfc5d9;font-size:12px}
+.hub-member .hub-avatar{width:29px;height:29px;font-size:11px}
+.hub-empty{color:#8f849b;text-align:center;padding:30px 10px;font-size:13px}
+@media(max-width:760px){
+ #communityHub.open{grid-template-columns:54px minmax(0,1fr);grid-template-rows:56px minmax(0,1fr)}
+ .hub-rail{grid-row:1/3;padding:10px 4px}.hub-logo,.hub-server{width:40px;height:40px}
+ .hub-channels{grid-column:2;grid-row:2;position:absolute;left:54px;top:56px;bottom:0;width:205px;z-index:3;box-shadow:12px 0 30px #0008;display:none}
+ #communityHub.channels-open .hub-channels{display:flex}
+ .hub-top{grid-column:2;grid-row:1;padding:0 10px}
+ .hub-main{grid-column:2;grid-row:2}
+ .hub-members{display:none}
+ .hub-messages{padding:14px 12px}
+ .hub-composer{padding:10px}
+ .hub-top-actions button[data-hub="members"]{display:none}
+}
+
+
+/* Performance and accessibility refinements */
+@media (max-width: 760px) {
+  .sidebar,
+  .topbar,
+  .composer,
+  .composer-dock {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  
+}
+
+
+/* ==========================================================
+   TAIGA AI — SIGNATURE DESKTOP EXPERIENCE
+   Warm graphite, restrained anime accents, Windows-friendly UI
+   ========================================================== */
+:root {
+  --bg: #111114;
+  --bg-soft: #17171b;
+  --panel: #1b1b20;
+  --panel-2: #222228;
+  --panel-3: #2b2b33;
+  --text: #f3f0eb;
+  --muted: #aaa6a0;
+  --subtle: #77736e;
+  --pink: #e9a0ad;
+  --pink-2: #c87f90;
+  --violet: #b6a5d9;
+  --blue: #9eafc8;
+  --green: #91c5a5;
+  --red: #df8990;
+  --yellow: #d8bd88;
+  --line: #ffffff12;
+  --line-strong: #ffffff24;
+  --shadow: 0 24px 80px #0009;
+  --radius: 16px;
+  --radius-lg: 23px;
+  --sidebar-width: 304px;
+  --base-font-size: 15px;
+}
+body {
+  background:
+    radial-gradient(ellipse at 82% -18%, #b78a9a18, transparent 43%),
+    radial-gradient(ellipse at 3% 100%, #8c7ba51a, transparent 38%),
+    #111114;
+  font-family: Inter, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: .005em;
+}
+.sidebar {
+  background: linear-gradient(180deg, #19191eeF, #151519f5);
+  border-right-color: #ffffff10;
+  box-shadow: 10px 0 50px #0002;
+}
+.brand { padding-bottom: 26px; }
+.brand-mark {
+  border-radius: 14px;
+  color: #24191c;
+  background: linear-gradient(145deg, #f1c1c5, #c9b9e5 90%);
+  box-shadow: 0 7px 28px #d99eae26, inset 0 1px #ffffffa0;
+}
+.brand-name { font-size: 17px; letter-spacing: -.55px; }
+.brand-version { letter-spacing: 1.8px; }
+.primary-button {
+  border-radius: 13px;
+  color: #21191b;
+  background: linear-gradient(115deg, #eeb7bc, #c8b8e5);
+  box-shadow: 0 7px 24px #d29eae22, inset 0 1px #ffffffa0;
+}
+.primary-button:hover { filter: brightness(1.06); box-shadow: 0 10px 30px #d29eae35; }
+.side-search input {
+  border-radius: 11px;
+  background: #ffffff06;
+  border-color: #ffffff10;
+}
+.chat-item { border-radius: 10px; min-height: 45px; }
+.chat-item.active {
+  background: linear-gradient(100deg, #e9a0ad16, #b6a5d916);
+  border-color: #e9a0ad20;
+  box-shadow: inset 2px 0 #d99aa9;
+}
+.side-link { border-radius: 10px; }
+.profile-mini { border-radius: 13px; background: #ffffff05; }
+.profile-avatar { background: linear-gradient(145deg, #efb8c1, #b9a8d8); }
+.topbar {
+  height: 72px;
+  flex-basis: 72px;
+  background: #141418c9;
+  border-bottom-color: #ffffff0e;
+  backdrop-filter: blur(24px);
+}
+.topbar-title { font-size: 14px; letter-spacing: -.2px; }
+.connection-status { color: #a4bba8; }
+.icon-button {
+  border-radius: 12px;
+  background: #ffffff05;
+  border-color: #ffffff10;
+}
+.icon-button:hover {
+  background: #ffffff0c;
+  border-color: #e9a0ad55;
+  color: #f6dce0;
+}
+.main-scroll { padding-top: 34px; }
+.welcome { padding-top: clamp(62px, 12vh, 132px); }
+.welcome-orb {
+  border-radius: 28px;
+  background: linear-gradient(145deg, #e9a0ad20, #b6a5d91e);
+  border-color: #ffffff22;
+  box-shadow: 0 0 80px #c39ab51b, inset 0 1px #ffffff16;
+}
+.welcome h1 { letter-spacing: -2.2px; font-weight: 780; }
+.gradient-text {
+  background: linear-gradient(100deg, #f0b6bd, #c7b7e2 82%);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+.welcome-description { line-height: 1.8; font-size: 13.5px; }
+.quick-prompt {
+  border-radius: 12px;
+  background: #ffffff06;
+  border-color: #ffffff13;
+  padding-inline: 15px;
+}
+.quick-prompt:hover {
+  background: #e9a0ad12;
+  border-color: #e9a0ad45;
+}
+.message { gap: 13px; margin: 28px auto; }
+.message-avatar {
+  border-radius: 13px;
+  background: linear-gradient(145deg, #efb8c1, #b9a8d8);
+  box-shadow: 0 5px 16px #0003;
+}
+.message.user .message-avatar { border-radius: 13px; background: #34343b; }
+.message-meta { font-size: 11px; }
+.message-bubble {
+  padding: 15px 18px;
+  border-radius: 5px 17px 17px 17px;
+  background: #202025;
+  border-color: #ffffff0b;
+  line-height: 1.75;
+}
+.message.user .message-bubble {
+  border-radius: 17px 5px 17px 17px;
+  background: linear-gradient(135deg, #49373e, #34313d);
+  border-color: #e9a0ad20;
+}
+.message-actions { opacity: .55; }
+.message-action { border-radius: 7px; }
+.composer-dock {
+  padding-bottom: calc(19px + var(--safe-bottom));
+  background: linear-gradient(180deg, transparent, #111114 30%);
+}
+.composer {
+  border-radius: 19px;
+  background: #202025f2;
+  border-color: #ffffff1c;
+  box-shadow: 0 20px 70px #0009, inset 0 1px #ffffff08;
+  backdrop-filter: blur(28px);
+}
+.composer:focus-within {
+  border-color: #d9a1ad75;
+  box-shadow: 0 0 0 4px #d9a1ad0d, 0 20px 70px #0009;
+}
+.send-button {
+  background: linear-gradient(145deg, #edb8bf, #c8b8e2);
+  color: #21191d;
+  box-shadow: 0 5px 18px #d59dab26;
+}
+.composer-hint { color: #77736e; }
+.modal {
+  background: #1b1b20;
+  border-color: #ffffff1b;
+  border-radius: 19px;
+  box-shadow: 0 30px 100px #000b;
+}
+.modal-header, .modal-footer { border-color: #ffffff12; }
+.modal-title { letter-spacing: -.35px; }
+.settings-tab.active {
+  color: #f0c5cb;
+  background: #e9a0ad12;
+  border-color: #e9a0ad25;
+}
+input, textarea, select {
+  accent-color: #dba2ad;
+}
+.secondary-button {
+  border-radius: 11px;
+  background: #ffffff08;
+  border-color: #ffffff17;
+}
+.secondary-button:hover { border-color: #e9a0ad50; background: #ffffff0d; }
+#communityHub {
+  background: #17171b;
+  color: #eeeae5;
+}
+.hub-rail { background: #111114; }
+.hub-channels { background: #1b1b20; }
+.hub-top { background: #1b1b20; border-color: #ffffff12; }
+.hub-server.active, .hub-channel.active { background: #e9a0ad16; color: #f2c8cf; }
+.hub-message { border-radius: 12px; }
+.hub-message:hover { background: #ffffff05; }
+.hub-message-text { line-height: 1.7; }
+.hub-composer, #hubComposer { background: #222228; border-color: #ffffff15; }
+#openCommunityHub { border-radius: 12px; }
+::selection { background: #d9a1ad55; color: #fff; }
+
+/* Command center */
+#taigaCommandPalette {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding: min(16vh, 130px) 18px 24px;
+  background: #050507b8;
+  backdrop-filter: blur(12px);
+}
+#taigaCommandPalette.open { display: flex; }
+.taiga-command-card {
+  width: min(620px, 100%);
+  overflow: hidden;
+  border: 1px solid #ffffff20;
+  border-radius: 19px;
+  background: #202025;
+  box-shadow: 0 35px 120px #000c;
+  animation: command-in .16s ease-out;
+}
+@keyframes command-in {
+  from { opacity: 0; transform: translateY(-9px) scale(.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.taiga-command-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 17px 19px;
+  border-bottom: 1px solid #ffffff12;
+}
+.taiga-command-search span { color: #d9a1ad; font-size: 20px; }
+.taiga-command-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #f3f0eb;
+  font-size: 16px;
+}
+.taiga-command-list { max-height: min(54vh, 440px); overflow: auto; padding: 9px; }
+.taiga-command-group {
+  padding: 11px 10px 6px;
+  color: #827d78;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+.taiga-command-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: transparent;
+  color: #eeeae5;
+  text-align: left;
+}
+.taiga-command-item:hover, .taiga-command-item.selected {
+  background: #e9a0ad12;
+  border-color: #e9a0ad25;
+}
+.taiga-command-icon {
+  width: 31px;
+  height: 31px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: #ffffff09;
+  color: #e8b4bd;
+}
+.taiga-command-copy { flex: 1; min-width: 0; }
+.taiga-command-copy b { display: block; font-size: 12px; font-weight: 700; }
+.taiga-command-copy small { display: block; margin-top: 2px; color: #918b85; font-size: 10px; }
+.taiga-command-item kbd {
+  padding: 3px 6px;
+  border: 1px solid #ffffff19;
+  border-radius: 6px;
+  color: #99928d;
+  font-size: 10px;
+}
+.taiga-command-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 15px;
+  border-top: 1px solid #ffffff12;
+  color: #817b76;
+  font-size: 10px;
+}
+#taigaToastStack {
+  position: fixed;
+  right: 20px;
+  bottom: 22px;
+  z-index: 10060;
+  display: grid;
+  gap: 8px;
+  width: min(350px, calc(100vw - 32px));
+  pointer-events: none;
+}
+.taiga-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid #ffffff1a;
+  border-radius: 12px;
+  background: #25252bf2;
+  box-shadow: 0 15px 45px #0008;
+  color: #f0ece7;
+  font-size: 12px;
+  animation: toast-in .18s ease-out;
+}
+.taiga-toast.success { border-color: #91c5a54d; }
+.taiga-toast.error { border-color: #df89904d; }
+.taiga-toast-icon { color: #e9a0ad; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+body.taiga-focus-mode .sidebar,
+body.taiga-focus-mode .topbar,
+body.taiga-focus-mode .composer-hint { opacity: .12; transition: opacity .2s; }
+body.taiga-focus-mode .sidebar:hover,
+body.taiga-focus-mode .topbar:hover,
+body.taiga-focus-mode .composer-dock:hover .composer-hint { opacity: 1; }
+body.taiga-focus-mode .messages { max-width: 920px; }
+@media (max-width: 760px) {
+  :root { --sidebar-width: min(86vw, 320px); }
+  .topbar { height: 60px; flex-basis: 60px; padding-inline: 13px; }
+  .main-scroll { padding: 18px 11px 175px; }
+  .message { gap: 8px; margin: 20px auto; }
+  .message-avatar { width: 31px; height: 31px; flex-basis: 31px; }
+  .message-body { max-width: calc(100% - 40px); }
+  .message-bubble { padding: 12px 13px; }
+  #taigaCommandPalette { padding-top: 8vh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #taigaCommandPalette *, #taigaToastStack *, .taiga-command-card {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 </style>
 </head>
+
 <body>
+<div class="app" id="app">
 
-<header>
-  <h1>Taiga AI</h1>
-  <div class="voice-wrap">
-    <select id="voiceSelect" title="Голос"></select>
-    <button class="icon-btn" id="stopSpeak" title="Стоп" style="width:34px;height:34px;font-size:14px;">■</button>
-  </div>
-</header>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">✦</div>
+      <div>
+        <div class="brand-name">Taiga AI Pro</div>
+        <span class="brand-version">Version 2.0 · Dark</span>
+      </div>
+    </div>
 
-<div id="chat"></div>
+    <button class="primary-button" id="newChatButton">
+      <span>＋</span>
+      <span>Новый диалог</span>
+    </button>
 
-<div id="preview">
-  <div class="thumb-wrap">
-    <img id="previewImg" alt="preview">
-    <button class="remove" id="removeImg" title="Удалить">×</button>
+    <div class="side-search">
+      <span class="side-search-icon">⌕</span>
+      <input id="chatSearch" type="search"
+        placeholder="Поиск по диалогам…"
+        autocomplete="off">
+    </div>
+
+    <div class="side-section-title">Твои диалоги</div>
+    <div class="chat-list" id="chatList">
+      <div class="empty-state">Загрузка диалогов…</div>
+    </div>
+
+    <div class="sidebar-bottom">
+      <button class="side-link" id="openMemoryButton">
+        <span>✧</span><span>Память Тайги</span>
+      </button>
+      <button class="side-link" id="openStatsButton">
+        <span>◷</span><span>Статистика</span>
+      </button>
+      <button class="side-link" id="openSettingsButton">
+        <span>⚙</span><span>Настройки и модели</span>
+      </button>
+      <button class="side-link donate-link" id="openDonationButton">
+        <span>♡</span><span>Поддержать разработчика</span>
+      </button>
+
+      <div class="profile-mini">
+        <div class="profile-avatar">T</div>
+        <div>
+          <div class="profile-name">Taiga AI</div>
+          <span class="profile-subtitle">Твой аниме-компаньон</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CHAT -->
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="icon-button mobile-menu" id="mobileMenuButton"
+          aria-label="Открыть меню">☰</button>
+        <div>
+          <div class="topbar-title" id="currentChatTitle">Новый диалог</div>
+          <div class="connection-status" id="connectionStatus">
+            <span class="connection-dot"></span>
+            <span id="connectionText">Готова к общению</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="icon-button" id="searchMessagesButton"
+          title="Поиск по сообщениям">⌕</button>
+        <button class="icon-button" id="exportChatButton"
+          title="Экспорт диалога">↧</button>
+        <button class="icon-button" id="chatOptionsButton"
+          title="Параметры диалога">⋯</button>
+        <button class="icon-button" id="topSettingsButton"
+          title="Настройки">⚙</button>
+      </div>
+    </header>
+
+    <section class="main-scroll" id="mainScroll">
+      <div class="messages" id="messages">
+
+        <div class="welcome" id="welcomeScreen">
+          <div class="welcome-orb">🐯</div>
+          <h1>Привет. Я <span class="gradient-text">Тайга.</span></h1>
+          <p class="welcome-description">
+            Ну и чего стоишь? Рассказывай, что случилось.
+            Я могу быть вредной, заботливой и неожиданно милой.
+            Только не думай, что я всегда буду тебя баловать!
+          </p>
+
+          <div class="quick-prompts">
+            <button class="quick-prompt" data-prompt="Давай просто поговорим.">
+              ☁ Просто поговорим
+            </button>
+            <button class="quick-prompt" data-prompt="Помоги мне разобраться в одной ситуации.">
+              💭 Помоги разобраться
+            </button>
+            <button class="quick-prompt" data-prompt="Мне нужно поднять настроение.">
+              ✨ Подними настроение
+            </button>
+            <button class="quick-prompt" data-prompt="Расскажи что-нибудь интересное.">
+              🌸 Удиви меня
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MESSAGE COMPOSER -->
+    <div class="composer-dock">
+      <div class="composer-wrap">
+
+        <div class="attachment-preview" id="attachmentPreview"></div>
+
+        <div class="composer">
+          <textarea id="messageInput" rows="1"
+            placeholder="Напиши Тайге сообщение…"
+            aria-label="Сообщение"></textarea>
+
+          <div class="composer-tools">
+            <button class="tool-button" id="attachButton"
+              title="Добавить изображение">＋</button>
+            <input id="imageInput" type="file"
+              accept="image/png,image/jpeg,image/webp"
+              multiple hidden>
+
+            <button class="tool-button" id="voiceInputButton"
+              title="Голосовой ввод">⌁</button>
+            <button class="tool-button" id="speakLastButton"
+              title="Озвучить последний ответ">♫</button>
+
+            <span class="provider-chip" id="providerChip">
+              Провайдер не выбран
+            </span>
+
+            <button class="send-button" id="sendButton"
+              title="Отправить сообщение">↑</button>
+          </div>
+        </div>
+
+        <div class="composer-hint">
+          Enter — отправить · Shift + Enter — новая строка
+          · Ctrl+K — поиск · Ctrl+Shift+N — новый чат · /help — команды
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- CHAT CONTEXT MENU -->
+<div class="modal-backdrop" id="chatOptionsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Параметры диалога</h2>
+      <button class="modal-close" data-close="chatOptionsModal">×</button>
+    </div>
+    <div class="modal-body">
+      <button class="side-link" id="renameChatButton">✎ Переименовать</button>
+      <button class="side-link" id="pinChatButton">☆ Закрепить / открепить</button>
+      <button class="side-link" id="duplicateChatButton">▣ Создать копию</button>
+      <button class="side-link" id="clearChatButton">⌫ Очистить сообщения</button>
+      <button class="side-link" id="deleteChatButton">♲ Удалить диалог</button>
+    </div>
   </div>
 </div>
 
-<footer>
-  <button class="icon-btn" id="attach" title="Прикрепить картинку">📷</button>
-  <input type="file" id="file" accept="image/*">
-  <textarea id="input" rows="1" placeholder="Напиши сообщение..."></textarea>
-  <button id="send">➤</button>
-</footer>
+<!-- SETTINGS MODAL -->
+<div class="modal-backdrop" id="settingsModal">
+  <div class="modal wide">
+    <div class="modal-header">
+      <h2 class="modal-title">Настройки Taiga AI Pro</h2>
+      <button class="modal-close" data-close="settingsModal">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="settings-tabs" id="settingsTabs">
+        <button class="settings-tab active" data-settings-tab="ai">ИИ и модели</button>
+        <button class="settings-tab" data-settings-tab="character">Характер</button>
+        <button class="settings-tab" data-settings-tab="appearance">Внешний вид</button>
+        <button class="settings-tab" data-settings-tab="voice">Голос</button>
+        <button class="settings-tab" data-settings-tab="privacy">Данные</button>
+      </div>
+
+      <section class="settings-panel" id="settingsPanel-ai">
+        <div class="field">
+          <label for="providerSelect">AI-провайдер</label>
+          <select id="providerSelect">
+            <option value="groq">Groq</option>
+            <option value="deepseek">DeepSeek</option>
+            <option value="openai">OpenAI</option>
+            <option value="claude">Anthropic Claude</option>
+            <option value="gemini">Google Gemini</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="apiKeyInput">API-ключ выбранного провайдера</label>
+          <input id="apiKeyInput" type="password"
+            placeholder="Вставь свой API-ключ"
+            autocomplete="off">
+          <div class="field-help">
+            Ключ хранится локально в браузере. Не публикуй его и не отправляй другим людям.
+            Для публичного приложения безопаснее использовать серверный прокси.
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="modelSelect">Модель</label>
+          <input id="modelSelect" type="text"
+            placeholder="Например: openai/gpt-oss-120b">
+        </div>
+
+        <div class="field">
+          <label for="temperatureInput">Креативность: <span id="temperatureValue">0.8</span></label>
+          <input id="temperatureInput" type="range" min="0" max="2" step="0.1" value="0.8">
+          <div class="field-help">Ниже — точнее и спокойнее, выше — свободнее и разнообразнее.</div>
+        </div>
+        <div class="field">
+          <label for="maxTokensInput">Максимальная длина ответа</label>
+          <select id="maxTokensInput">
+            <option value="512">Короткий · 512</option>
+            <option value="1024">Обычный · 1024</option>
+            <option value="2048" selected>Подробный · 2048</option>
+            <option value="4096">Очень подробный · 4096</option>
+            <option value="8192">Максимальный · 8192</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="maxHistoryInput">Сколько прошлых сообщений учитывать</label>
+          <select id="maxHistoryInput">
+            <option value="10">10 сообщений</option>
+            <option value="20">20 сообщений</option>
+            <option value="40" selected>40 сообщений</option>
+            <option value="80">80 сообщений</option>
+            <option value="120">120 сообщений</option>
+          </select>
+        </div>
+        <button class="secondary-button" id="testProviderButton">
+          Проверить подключение
+        </button>
+      </section>
+
+      <section class="settings-panel" id="settingsPanel-character" hidden>
+        <div class="field">
+          <label for="personaSelect">Характер Тайги</label>
+          <select id="personaSelect">
+            <option value="taiga">Классическая цундере</option>
+            <option value="gentle">Мягкая и заботливая</option>
+            <option value="playful">Весёлая и озорная</option>
+            <option value="yandere">Ревнивая и эмоциональная</option>
+            <option value="kuudere">Спокойная и сдержанная</option>
+            <option value="custom">Свой характер</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="customPersonaInput">Дополнительные особенности</label>
+          <textarea id="customPersonaInput"
+            placeholder="Опиши, как Тайга должна общаться…"></textarea>
+        </div>
+        <div class="field">
+          <label for="relationshipLevel">Уровень близости</label>
+          <input id="relationshipLevel" type="range" min="0" max="100" value="20">
+          <div class="field-help" id="relationshipValue">20 / 100</div>
+        </div>
+      </section>
+
+      <section class="settings-panel" id="settingsPanel-appearance" hidden>
+        <div class="field">
+          <label for="themeSelect">Тема</label>
+          <select id="themeSelect">
+            <option value="dark">Dark Anime</option>
+            <option value="pink">Taiga Pink</option>
+            <option value="midnight">Midnight Violet</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fontSizeSelect">Размер текста</label>
+          <select id="fontSizeSelect">
+            <option value="14px">Маленький</option>
+            <option value="15px" selected>Обычный</option>
+            <option value="17px">Большой</option>
+            <option value="19px">Очень большой</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="settings-panel" id="settingsPanel-voice" hidden>
+        <div class="setting-row">
+          <div>
+            <div class="setting-row-title">Озвучивать ответы</div>
+            <div class="setting-row-description">Использовать системный синтез речи</div>
+          </div>
+          <button class="toggle" id="ttsToggle" role="switch"
+            aria-checked="false" aria-label="Озвучивание ответов"></button>
+        </div>
+        <div class="field">
+          <label for="voiceSelect">Голос системы</label>
+          <select id="voiceSelect">
+            <option value="">Автоматический русский голос</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="speechRate">Скорость речи</label>
+          <input id="speechRate" type="range"
+            min="0.7" max="1.4" step="0.1" value="1">
+        </div>
+      </section>
+
+      <section class="settings-panel" id="settingsPanel-privacy" hidden>
+        <div class="setting-row">
+          <div>
+            <div class="setting-row-title">Локальная память</div>
+            <div class="setting-row-description">Сохранять чаты и настройки на устройстве</div>
+          </div>
+          <button class="toggle" id="memoryToggle" role="switch"
+            aria-checked="true" aria-label="Локальная память"></button>
+        </div>
+        <div class="divider"></div>
+        <button class="secondary-button" id="downloadBackupButton">
+          Скачать резервную копию (без API-ключей)
+        </button>
+        <button class="secondary-button" id="restoreBackupButton">
+          Восстановить из копии
+        </button>
+        <input type="file" id="backupFileInput"
+          accept="application/json,.json" hidden>
+        <div class="field-help">
+          При отключении локальной памяти новые изменения не будут сохраняться.
+          Экспортируй важные диалоги заранее.
+        </div>
+      </section>
+    </div>
+    <div class="modal-footer">
+      <button class="secondary-button" data-close="settingsModal">Закрыть</button>
+      <button class="primary-button" id="saveSettingsButton">Сохранить настройки</button>
+    </div>
+  </div>
+</div>
+
+<!-- DONATION MODAL -->
+<div class="modal-backdrop" id="donationModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Поддержать Taiga AI</h2>
+      <button class="modal-close" data-close="donationModal">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="donation-hero">
+        <div class="donation-heart">♡</div>
+        <h3 class="donation-title">Помоги Тайге расти!</h3>
+        <p class="donation-description">
+          Если тебе нравится проект, ты можешь добровольно поддержать его развитие.
+          Любая поддержка — это мотивация добавлять новые функции и улучшать приложение.
+        </p>
+      </div>
+
+      <div class="side-section-title">Выбери сумму для поддержки</div>
+      <div class="donation-options" id="donationOptions">
+        <button class="donation-option" data-amount="50">50 ₽</button>
+        <button class="donation-option" data-amount="100">100 ₽</button>
+        <button class="donation-option" data-amount="250">250 ₽</button>
+        <button class="donation-option" data-amount="500">500 ₽</button>
+        <button class="donation-option" data-amount="1000">1 000 ₽</button>
+        <button class="donation-option" data-amount="custom">Своя сумма</button>
+      </div>
+
+      <div class="field" id="customDonationField" hidden>
+        <label for="customDonationAmount">Своя сумма (₽)</label>
+        <input id="customDonationAmount" type="number"
+          min="1" max="100000" placeholder="Например, 150">
+      </div>
+
+      <div class="field">
+        <label>Способ поддержки</label>
+        <div class="badge pink">GGSEL · Пополнение Steam</div>
+      </div>
+
+      <button class="primary-button" id="ggselDonateButton">
+        Перейти к поддержке на GGSEL →
+      </button>
+
+      <p class="donation-note">
+        Перед оплатой проверь логин и регион аккаунта на странице продавца.
+        Приложение не запрашивает пароль Steam, Steam Guard или коды подтверждения.
+        Сумма выбирается и оплачивается непосредственно на площадке.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- MEMORY MODAL -->
+<div class="modal-backdrop" id="memoryModal">
+  <div class="modal wide">
+    <div class="modal-header">
+      <h2 class="modal-title">Память Тайги</h2>
+      <button class="modal-close" data-close="memoryModal">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="field-help">
+        Здесь будут храниться факты, которые Тайга использует для персонализации ответов.
+        Ты сможешь просматривать и удалять их.
+      </p>
+      <div id="memoryList" class="empty-state">Пока воспоминаний нет.</div>
+      <div class="field">
+        <label for="newMemoryInput">Добавить воспоминание</label>
+        <textarea id="newMemoryInput"
+          placeholder="Например: мне нравится аниме и игры…"></textarea>
+      </div>
+      <button class="primary-button" id="addMemoryButton">Добавить в память</button>
+    </div>
+  </div>
+</div>
+
+<!-- STATISTICS MODAL -->
+<div class="modal-backdrop" id="statsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Статистика</h2>
+      <button class="modal-close" data-close="statsModal">×</button>
+    </div>
+    <div class="modal-body" id="statsContent">
+      <div class="empty-state">Статистика появится после общения.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH MODAL -->
+<div class="modal-backdrop" id="searchModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Поиск по сообщениям</h2>
+      <button class="modal-close" data-close="searchModal">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <input id="messageSearchInput" type="search"
+          placeholder="Найти сообщение…">
+      </div>
+      <div id="messageSearchResults" class="empty-state">
+        Введи слово или фразу для поиска.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MESSAGE MODAL -->
+<div class="modal-backdrop" id="editMessageModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Редактировать сообщение</h2>
+      <button class="modal-close" data-close="editMessageModal">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <textarea id="editMessageInput"></textarea>
+      </div>
+      <button class="primary-button" id="saveEditedMessageButton">
+        Сохранить и повторить ответ
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- RENAME CHAT MODAL -->
+<div class="modal-backdrop" id="renameChatModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Название диалога</h2>
+      <button class="modal-close" data-close="renameChatModal">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <input id="renameChatInput" maxlength="80"
+          placeholder="Название диалога">
+      </div>
+      <button class="primary-button" id="saveChatNameButton">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- HIDDEN GLOBAL ELEMENTS -->
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+<div id="screenReaderStatus" class="empty-state"
+  aria-live="polite" style="position:absolute;left:-9999px"></div>
 
 <script>
-(function () {
+
+const TaigaStore = (() => {
   "use strict";
 
-  // ==== НАСТРОЙКА: адрес вашего сервера на Render ====
-  // Сервер должен принимать POST /chat с JSON {message, image}
-  var SERVER_URL = "https://taiga-ai-server-1.onrender.com/chat";
+  const STORAGE_KEY = "taiga_pro_v2_data";
+  const LEGACY_CHATS_KEY = "taiga_chats";
+  const LEGACY_CONFIG_KEY = "taiga_cfg";
 
-  var chatEl = document.getElementById("chat");
-  var inputEl = document.getElementById("input");
-  var sendBtn = document.getElementById("send");
-  var attachBtn = document.getElementById("attach");
-  var fileEl = document.getElementById("file");
-  var previewEl = document.getElementById("preview");
-  var previewImg = document.getElementById("previewImg");
-  var removeImgBtn = document.getElementById("removeImg");
-  var voiceSelect = document.getElementById("voiceSelect");
-  var stopSpeakBtn = document.getElementById("stopSpeak");
+  let storageAvailable = true;
+  let state = null;
 
-  var pendingImage = null; // {dataUrl, base64}
-  var history = [];        // {role, content} для контекста
-  var busy = false;
+  function uid(prefix = "id") {
+    const random = typeof crypto !== "undefined" &&
+      typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID()
+      : Date.now().toString(36) + Math.random().toString(36).slice(2);
 
-  // ---------- Голоса ----------
-  var synth = window.speechSynthesis;
-  function loadVoices() {
-    if (!synth) return;
-    var voices = synth.getVoices();
-    voiceSelect.innerHTML = "";
-    if (!voices.length) {
-      var opt = document.createElement("option");
-      opt.textContent = "Голоса не найдены";
-      voiceSelect.appendChild(opt);
-      return;
+    return prefix + "_" + random;
+  }
+
+  function now() {
+    return new Date().toISOString();
+  }
+
+  function safeParse(value, fallback) {
+    try {
+      const parsed = JSON.parse(value);
+      return parsed ?? fallback;
+    } catch {
+      return fallback;
     }
-    voices.forEach(function (v, i) {
-      var o = document.createElement("option");
-      o.value = i;
-      o.textContent = v.name + " (" + v.lang + ")";
-      voiceSelect.appendChild(o);
-    });
-    // предпочесть русский голос
-    var ruIdx = voices.findIndex(function (v) { return v.lang && v.lang.toLowerCase().indexOf("ru") === 0; });
-    if (ruIdx >= 0) voiceSelect.value = ruIdx;
-  }
-  if (synth) {
-    synth.onvoiceschanged = loadVoices;
-    loadVoices();
-  }
-  stopSpeakBtn.addEventListener("click", function () {
-    if (synth) synth.cancel();
-  });
-
-  function speak(text) {
-    if (!synth || !text) return;
-    synth.cancel();
-    var u = new SpeechSynthesisUtterance(text);
-    var voices = synth.getVoices();
-    var idx = parseInt(voiceSelect.value, 10);
-    if (voices[idx]) { u.voice = voices[idx]; u.lang = voices[idx].lang; }
-    u.rate = 1; u.pitch = 1;
-    synth.speak(u);
   }
 
-  // ---------- UI: сообщения ----------
-  function addMessage(role, text, imageDataUrl) {
-    var div = document.createElement("div");
-    div.className = "msg " + role;
-    if (imageDataUrl) {
-      var img = document.createElement("img");
-      img.src = imageDataUrl;
-      div.appendChild(img);
-    }
-    if (text) {
-      var span = document.createElement("span");
-      span.textContent = text;
-      div.appendChild(span);
-    }
-    if (role === "ai" && text) {
-      var sp = document.createElement("span");
-      sp.className = "speak";
-      sp.textContent = "🔊 озвучить";
-      sp.addEventListener("click", function () { speak(text); });
-      div.appendChild(sp);
-    }
-    chatEl.appendChild(div);
-    chatEl.scrollTop = chatEl.scrollHeight;
-    return div;
-  }
+  function defaultState() {
+    return {
+      version: 2,
+      createdAt: now(),
+      updatedAt: now(),
 
-  function addTyping() {
-    var d = document.createElement("div");
-    d.className = "msg ai typing";
-    d.textContent = "Тайга печатает…";
-    chatEl.appendChild(d);
-    chatEl.scrollTop = chatEl.scrollHeight;
-    return d;
-  }
+      activeChatId: null,
 
-  // ---------- Картинка ----------
-  attachBtn.addEventListener("click", function () { fileEl.click(); });
-  fileEl.addEventListener("change", function () {
-    var f = fileEl.files && fileEl.files[0];
-    if (!f) return;
-    if (!f.type.startsWith("image/")) { alert("Нужна картинка"); return; }
-    if (f.size > 5 * 1024 * 1024) { alert("Максимум 5 МБ"); return; }
-    var reader = new FileReader();
-    reader.onload = function (e) {
-      var dataUrl = e.target.result;
-      pendingImage = { dataUrl: dataUrl, base64: dataUrl.split(",")[1] };
-      previewImg.src = dataUrl;
-      previewEl.classList.add("show");
+      chats: [],
+
+      memory: {
+        enabled: true,
+        facts: []
+      },
+
+      settings: {
+        provider: "groq",
+
+        keys: {},
+
+        models: {
+          groq: "openai/gpt-oss-120b",
+          deepseek: "deepseek-chat",
+          openai: "gpt-4o",
+          claude: "claude-sonnet-4-20250514",
+          gemini: "gemini-2.0-flash"
+        },
+
+        persona: "taiga",
+
+        customPersona: "",
+
+        relationship: 20,
+
+        theme: "dark",
+
+        fontSize: "15px",
+
+        ttsEnabled: false,
+
+        ttsRate: 1,
+
+        ttsVoice: "",
+
+        autoSave: true,
+
+        maxHistory: 40,
+        temperature: 0.8,
+        maxTokens: 2048
+      },
+
+      statistics: {
+        sentMessages: 0,
+        receivedMessages: 0,
+        totalCharacters: 0,
+        totalTokensEstimated: 0,
+        sessions: 0,
+        firstUse: now(),
+        lastUse: now()
+      }
     };
-    reader.readAsDataURL(f);
-    fileEl.value = "";
-  });
-  removeImgBtn.addEventListener("click", function () {
-    pendingImage = null;
-    previewEl.classList.remove("show");
-    previewImg.src = "";
-  });
-
-  // ---------- Отправка ----------
-  function setBusy(v) {
-    busy = v;
-    sendBtn.disabled = v;
-    inputEl.disabled = v;
-    attachBtn.disabled = v;
   }
 
-  async function sendMessage() {
-    if (busy) return;
-    var text = inputEl.value.trim();
-    if (!text && !pendingImage) return;
+  function normalizeMessage(message) {
+    return {
+      id: message.id || uid("msg"),
 
-    var imgForMsg = pendingImage ? pendingImage.dataUrl : null;
-    addMessage("user", text, imgForMsg);
+      role: message.role === "assistant"
+        ? "assistant"
+        : message.role === "user"
+          ? "user"
+          : "assistant",
 
-    history.push({
-      role: "user",
-      content: text || "[картинка]"
-    });
+      content: String(message.content ?? ""),
 
-    var payload = {
-      message: text,
-      image: pendingImage ? pendingImage.base64 : null,
-      history: history.slice(-10)
+      attachments: Array.isArray(message.attachments)
+        ? message.attachments.filter(item => item && typeof item.data === "string" &&
+            /^data:image\/(png|jpeg|webp);base64,/i.test(item.data))
+            .slice(0, 4).map(item => ({
+              name: String(item.name || "image").slice(0, 120),
+              type: String(item.type || "image/jpeg").slice(0, 40),
+              data: item.data
+            }))
+        : [],
+
+      createdAt: message.createdAt || now(),
+
+      edited: Boolean(message.edited),
+
+      error: Boolean(message.error),
+
+      model: message.model || null,
+
+      generationTime: Number(message.generationTime) || 0,
+
+      pinned: Boolean(message.pinned)
+    };
+  }
+
+  function normalizeChat(chat) {
+    const messages = Array.isArray(chat.messages)
+      ? chat.messages.map(normalizeMessage)
+      : [];
+
+    return {
+      id: String(chat.id || uid("chat")),
+
+      title: String(chat.title || "Новый диалог").slice(0, 80),
+
+      messages,
+
+      createdAt: chat.createdAt || now(),
+
+      updatedAt: chat.updatedAt || now(),
+
+      pinned: Boolean(chat.pinned),
+
+      folder: String(chat.folder || "Основные"),
+
+      archived: Boolean(chat.archived),
+
+      systemNote: String(chat.systemNote || ""),
+
+      metadata: {
+        ...(chat.metadata || {})
+      }
+    };
+  }
+
+  function migrateLegacy() {
+    const result = defaultState();
+    const readLegacy = key => {
+      try { return localStorage.getItem(key); }
+      catch { storageAvailable = false; return null; }
     };
 
-    inputEl.value = "";
-    inputEl.style.height = "auto";
-    pendingImage = null;
-    previewEl.classList.remove("show");
-    previewImg.src = "";
+    const oldChats = safeParse(readLegacy(LEGACY_CHATS_KEY), []);
+    const oldConfig = safeParse(readLegacy(LEGACY_CONFIG_KEY), {});
 
-    setBusy(true);
-    var typing = addTyping();
+    if (Array.isArray(oldChats)) {
+      result.chats = oldChats.map(normalizeChat);
+    }
+
+    if (oldConfig && typeof oldConfig === "object") {
+      result.settings.provider =
+        oldConfig.provider || "groq";
+
+      result.settings.keys =
+        oldConfig.keys || {};
+
+      result.settings.models = {
+        ...result.settings.models,
+        ...(oldConfig.models || {})
+      };
+    }
+
+    if (result.chats.length) {
+      result.activeChatId = result.chats[0].id;
+    }
+
+    return result;
+  }
+
+  function validateState(input) {
+    const base = defaultState();
+
+    if (!input || typeof input !== "object") {
+      return base;
+    }
+
+    const validChats = Array.isArray(input.chats)
+      ? input.chats.map(normalizeChat)
+      : [];
+
+    const validMemory = input.memory &&
+      typeof input.memory === "object"
+      ? input.memory
+      : {};
+
+    const validSettings = input.settings &&
+      typeof input.settings === "object"
+      ? input.settings
+      : {};
+
+    const validStatistics = input.statistics &&
+      typeof input.statistics === "object"
+      ? input.statistics
+      : {};
+
+    const result = {
+      ...base,
+      ...input,
+
+      version: 2,
+
+      chats: validChats,
+
+      memory: {
+        enabled: validMemory.enabled !== false,
+
+        facts: Array.isArray(validMemory.facts)
+          ? validMemory.facts
+              .filter(x => x && typeof x.text === "string")
+              .map(x => ({
+                id: String(x.id || uid("memory")),
+                text: x.text.slice(0, 1000),
+                createdAt: x.createdAt || now()
+              }))
+          : []
+      },
+
+      settings: {
+        ...base.settings,
+        ...validSettings,
+
+        keys: {
+          ...(validSettings.keys || {})
+        },
+
+        models: {
+          ...base.settings.models,
+          ...(validSettings.models || {})
+        }
+      },
+
+      statistics: {
+        ...base.statistics,
+        ...validStatistics
+      }
+    };
+
+    if (
+      !result.chats.some(
+        chat => chat.id === result.activeChatId
+      )
+    ) {
+      result.activeChatId =
+        result.chats[0]?.id || null;
+    }
+
+    return result;
+  }
+
+  function load() {
+    let saved = null;
 
     try {
-      var res = await fetch(SERVER_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      var data = await res.json();
-      var reply = data.reply || data.message || data.content || "";
-      typing.remove();
-      if (!reply) reply = "Пустой ответ от сервера.";
-      addMessage("ai", reply);
-      history.push({ role: "assistant", content: reply });
-      speak(reply);
-    } catch (err) {
-      typing.remove();
-      addMessage("ai", "Ошибка связи с сервером: " + err.message);
-    } finally {
-      setBusy(false);
-      inputEl.focus();
+      saved = localStorage.getItem(STORAGE_KEY);
+    } catch {
+      storageAvailable = false;
+    }
+
+    if (saved) {
+      state = validateState(safeParse(saved, null));
+    } else {
+      state = migrateLegacy();
+      save();
+    }
+
+    if (!state.chats.length) {
+      createChat();
+    }
+
+    return state;
+  }
+
+  function save() {
+    if (!state) return false;
+
+    state.updatedAt = now();
+
+    if (!storageAvailable) return false;
+
+    try {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(state)
+      );
+
+      return true;
+    } catch (error) {
+      console.warn("Taiga storage error:", error);
+
+      if (error?.name === "QuotaExceededError") {
+        notify("Недостаточно места для сохранения данных", "error");
+      }
+
+      return false;
     }
   }
 
-  sendBtn.addEventListener("click", sendMessage);
-  inputEl.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
+  function getState() {
+    return state;
+  }
+
+  function getSettings() {
+    return state.settings;
+  }
+
+  function getChats() {
+    return state.chats;
+  }
+
+  function getActiveChat() {
+    return state.chats.find(
+      chat => chat.id === state.activeChatId
+    ) || null;
+  }
+
+  function setActiveChat(id) {
+    const target = state.chats.find(
+      chat => chat.id === id
+    );
+
+    if (!target) return false;
+
+    state.activeChatId = id;
+    target.updatedAt = now();
+
+    save();
+
+    return true;
+  }
+
+  function createChat(title = "Новый диалог") {
+    const chat = normalizeChat({
+      id: uid("chat"),
+      title,
+      messages: [],
+      createdAt: now(),
+      updatedAt: now(),
+      pinned: false,
+      folder: "Основные"
+    });
+
+    state.chats.unshift(chat);
+    state.activeChatId = chat.id;
+
+    save();
+
+    return chat;
+  }
+
+  function deleteChat(id) {
+    const index = state.chats.findIndex(
+      chat => chat.id === id
+    );
+
+    if (index < 0) return false;
+
+    state.chats.splice(index, 1);
+
+    if (state.activeChatId === id) {
+      state.activeChatId =
+        state.chats[0]?.id || null;
+    }
+
+    if (!state.chats.length) {
+      createChat();
+    }
+
+    save();
+
+    return true;
+  }
+
+  function renameChat(id, title) {
+    const target = state.chats.find(
+      chat => chat.id === id
+    );
+
+    if (!target) return false;
+
+    const cleanTitle = String(title || "").trim();
+
+    if (!cleanTitle) return false;
+
+    target.title = cleanTitle.slice(0, 80);
+    target.updatedAt = now();
+
+    save();
+
+    return true;
+  }
+
+  function togglePin(id) {
+    const target = state.chats.find(
+      chat => chat.id === id
+    );
+
+    if (!target) return false;
+
+    target.pinned = !target.pinned;
+    target.updatedAt = now();
+
+    save();
+
+    return target.pinned;
+  }
+
+  function duplicateChat(id) {
+    const original = state.chats.find(
+      chat => chat.id === id
+    );
+
+    if (!original) return null;
+
+    const copy = normalizeChat({
+      ...original,
+      id: uid("chat"),
+      title: original.title + " — копия",
+      createdAt: now(),
+      updatedAt: now(),
+      pinned: false,
+      messages: original.messages.map(message => ({
+        ...message,
+        id: uid("msg")
+      }))
+    });
+
+    state.chats.unshift(copy);
+    state.activeChatId = copy.id;
+
+    save();
+
+    return copy;
+  }
+
+  function clearChat(id) {
+    const target = state.chats.find(
+      chat => chat.id === id
+    );
+
+    if (!target) return false;
+
+    target.messages = [];
+    target.updatedAt = now();
+
+    save();
+
+    return true;
+  }
+
+  function setFolder(id, folder) {
+    const target = state.chats.find(
+      chat => chat.id === id
+    );
+
+    if (!target) return false;
+
+    target.folder = String(folder || "Основные")
+      .trim()
+      .slice(0, 40);
+
+    save();
+
+    return true;
+  }
+
+  function getFolders() {
+    return [
+      ...new Set(
+        state.chats.map(chat => chat.folder || "Основные")
+      )
+    ];
+  }
+
+  function addMessage(role, content, options = {}) {
+    const target = getActiveChat();
+
+    if (!target) return null;
+
+    const message = normalizeMessage({
+      id: uid("msg"),
+      role,
+      content,
+      attachments: options.attachments || [],
+      createdAt: now(),
+      model: options.model || null,
+      error: options.error || false
+    });
+
+    target.messages.push(message);
+    target.updatedAt = now();
+
+    if (
+      role === "user" &&
+      target.title === "Новый диалог"
+    ) {
+      const clean = String(content)
+        .replace(/\s+/g, " ")
+        .trim();
+      const titleSource = clean || (message.attachments.length
+        ? "Изображение: " + (message.attachments[0].name || "вложение")
+        : "");
+
+      if (titleSource) {
+        target.title = titleSource.slice(0, 36) +
+          (titleSource.length > 36 ? "…" : "");
+      }
+    }
+
+    if (role === "user") {
+      state.statistics.sentMessages++;
+    } else {
+      state.statistics.receivedMessages++;
+    }
+
+    state.statistics.totalCharacters +=
+      String(content).length;
+
+    state.statistics.totalTokensEstimated +=
+      Math.ceil(String(content).length / 4);
+
+    state.statistics.lastUse = now();
+
+    save();
+
+    return message;
+  }
+
+  function updateMessage(chatId, messageId, changes) {
+    const target = state.chats.find(
+      chat => chat.id === chatId
+    );
+
+    if (!target) return false;
+
+    const message = target.messages.find(
+      item => item.id === messageId
+    );
+
+    if (!message) return false;
+
+    Object.assign(message, changes);
+
+    target.updatedAt = now();
+
+    save();
+
+    return true;
+  }
+
+  function deleteMessage(chatId, messageId) {
+    const target = state.chats.find(
+      chat => chat.id === chatId
+    );
+
+    if (!target) return false;
+
+    const index = target.messages.findIndex(
+      message => message.id === messageId
+    );
+
+    if (index < 0) return false;
+
+    target.messages.splice(index, 1);
+    target.updatedAt = now();
+
+    save();
+
+    return true;
+  }
+
+  function searchChats(query) {
+    const q = String(query || "")
+      .trim()
+      .toLocaleLowerCase("ru");
+
+    if (!q) return [...state.chats];
+
+    return state.chats.filter(chat => {
+      const titleMatch = chat.title
+        .toLocaleLowerCase("ru")
+        .includes(q);
+
+      const messageMatch = chat.messages.some(
+        message => String(message.content)
+          .toLocaleLowerCase("ru")
+          .includes(q)
+      );
+
+      return titleMatch || messageMatch;
+    });
+  }
+
+  function searchMessages(query) {
+    const q = String(query || "")
+      .trim()
+      .toLocaleLowerCase("ru");
+
+    if (!q) return [];
+
+    const results = [];
+
+    state.chats.forEach(chat => {
+      chat.messages.forEach(message => {
+        if (
+          String(message.content)
+            .toLocaleLowerCase("ru")
+            .includes(q)
+        ) {
+          results.push({
+            chatId: chat.id,
+            chatTitle: chat.title,
+            messageId: message.id,
+            role: message.role,
+            content: message.content,
+            createdAt: message.createdAt
+          });
+        }
+      });
+    });
+
+    return results.sort(
+      (a, b) =>
+        new Date(b.createdAt) - new Date(a.createdAt)
+    );
+  }
+
+  function addMemory(text) {
+    const clean = String(text || "").trim();
+
+    if (!clean) return null;
+
+    const duplicate = state.memory.facts.some(
+      item =>
+        item.text.toLocaleLowerCase("ru") ===
+        clean.toLocaleLowerCase("ru")
+    );
+
+    if (duplicate) return null;
+
+    const item = {
+      id: uid("memory"),
+      text: clean.slice(0, 1000),
+      createdAt: now()
+    };
+
+    state.memory.facts.unshift(item);
+
+    save();
+
+    return item;
+  }
+
+  function removeMemory(id) {
+    const before = state.memory.facts.length;
+
+    state.memory.facts =
+      state.memory.facts.filter(
+        item => item.id !== id
+      );
+
+    save();
+
+    return state.memory.facts.length < before;
+  }
+
+  function clearMemory() {
+    state.memory.facts = [];
+    save();
+  }
+
+  function buildMemoryPrompt() {
+    if (!state.memory.enabled) return "";
+
+    const facts = state.memory.facts
+      .slice(0, 30)
+      .map(item => "- " + item.text);
+
+    if (!facts.length) return "";
+
+    return [
+      "ПАМЯТЬ О СОБЕСЕДНИКЕ:",
+      "Используй эти факты как контекст, но не выдумывай новые:",
+      ...facts
+    ].join("\n");
+  }
+
+  function setMemoryEnabled(enabled) {
+    state.memory.enabled = Boolean(enabled);
+    save();
+  }
+
+  function updateSettings(changes) {
+    state.settings = {
+      ...state.settings,
+      ...changes
+    };
+
+    save();
+  }
+
+  function updateProviderKey(provider, key) {
+    state.settings.keys[provider] =
+      String(key || "").trim();
+
+    save();
+  }
+
+  function updateProviderModel(provider, model) {
+    state.settings.models[provider] =
+      String(model || "").trim();
+
+    save();
+  }
+
+  function getStatistics() {
+    const chats = state.chats;
+    const messages = chats.flatMap(
+      chat => chat.messages
+    );
+
+    const userMessages = messages.filter(
+      message => message.role === "user"
+    );
+
+    const assistantMessages = messages.filter(
+      message => message.role === "assistant"
+    );
+
+    const characters = messages.reduce(
+      (sum, message) =>
+        sum + String(message.content).length,
+      0
+    );
+
+    return {
+      chats: chats.length,
+      messages: messages.length,
+      sent: userMessages.length,
+      received: assistantMessages.length,
+      characters,
+      estimatedTokens: Math.ceil(characters / 4),
+      memories: state.memory.facts.length,
+      pinnedChats: chats.filter(
+        chat => chat.pinned
+      ).length
+    };
+  }
+
+  function exportChat(id) {
+    const target = state.chats.find(
+      chat => chat.id === id
+    );
+
+    if (!target) return null;
+
+    return JSON.stringify({
+      format: "TaigaAIChat",
+      version: 2,
+      exportedAt: now(),
+      chat: target
+    }, null, 2);
+  }
+
+  function exportBackup() {
+    // API-ключи не попадают в резервную копию, чтобы их случайно
+    // не отправили вместе с файлом чатов и настроек.
+    const safeState = JSON.parse(JSON.stringify(state));
+    if (safeState.settings) safeState.settings.keys = {};
+    return JSON.stringify({
+      format: "TaigaAIBackup",
+      version: 2,
+      exportedAt: now(),
+      data: safeState,
+      security: "API keys excluded"
+    }, null, 2);
+  }
+
+  function importBackup(raw) {
+    const parsed = safeParse(raw, null);
+
+    if (!parsed || typeof parsed !== "object") {
+      throw new Error("Файл резервной копии повреждён");
+    }
+
+    let incoming;
+
+    if (parsed.format === "TaigaAIBackup") {
+      incoming = parsed.data;
+    } else if (parsed.format === "TaigaAIChat") {
+      const current = defaultState();
+
+      current.chats = [
+        normalizeChat(parsed.chat)
+      ];
+
+      current.activeChatId = current.chats[0].id;
+
+      incoming = current;
+    } else {
+      throw new Error("Неизвестный формат резервной копии");
+    }
+
+    state = validateState(incoming);
+
+    if (!state.chats.length) {
+      createChat();
+    }
+
+    save();
+
+    return state;
+  }
+
+  function downloadText(filename, content, type) {
+    const blob = new Blob(
+      [content],
+      { type: type || "text/plain;charset=utf-8" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+
+    anchor.href = url;
+    anchor.download = filename;
+
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  return {
+    load,
+    save,
+    getState,
+    getSettings,
+    getChats,
+    getActiveChat,
+    setActiveChat,
+    createChat,
+    deleteChat,
+    renameChat,
+    togglePin,
+    duplicateChat,
+    clearChat,
+    setFolder,
+    getFolders,
+    addMessage,
+    updateMessage,
+    deleteMessage,
+    searchChats,
+    searchMessages,
+    addMemory,
+    removeMemory,
+    clearMemory,
+    buildMemoryPrompt,
+    setMemoryEnabled,
+    updateSettings,
+    updateProviderKey,
+    updateProviderModel,
+    getStatistics,
+    exportChat,
+    exportBackup,
+    importBackup,
+    downloadText,
+    uid
+  };
+})();
+
+const TaigaApp = {
+  busy: false,
+  abortController: null,
+  activeEditMessageId: null,
+  activeEditChatId: null,
+  selectedDonationAmount: 100,
+  attachments: [],
+  recognition: null,
+  lastAssistantMessage: "",
+  currentSettingsTab: "ai"
+};
+
+function notify(message, type = "info") {
+  const stack = document.getElementById("toastStack");
+
+  if (!stack) {
+    console.log(message);
+    return;
+  }
+
+  const toast = document.createElement("div");
+
+  toast.className = "toast " + type;
+  toast.textContent = String(message);
+
+  stack.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(8px)";
+
+    setTimeout(() => toast.remove(), 250);
+  }, 3000);
+}
+
+function getElement(id) {
+  return document.getElementById(id);
+}
+
+function setText(id, value) {
+  const element = getElement(id);
+
+  if (element) {
+    element.textContent = String(value ?? "");
+  }
+}
+
+function openModal(id) {
+  const modal = getElement(id);
+
+  if (!modal) return;
+
+  modal.classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal(id) {
+  const modal = getElement(id);
+
+  if (!modal) return;
+
+  modal.classList.remove("show");
+
+  if (!document.querySelector(".modal-backdrop.show")) {
+    document.body.style.overflow = "";
+  }
+}
+
+function closeAllModals() {
+  document.querySelectorAll(".modal-backdrop.show")
+    .forEach(modal => modal.classList.remove("show"));
+
+  document.body.style.overflow = "";
+}
+
+function formatDate(value) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return date.toLocaleString("ru-RU", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function formatNumber(value) {
+  return Number(value || 0).toLocaleString("ru-RU");
+}
+
+function renderChatList(filter = "") {
+  const list = getElement("chatList");
+
+  if (!list) return;
+
+  const query = String(filter || "")
+    .trim()
+    .toLocaleLowerCase("ru");
+
+  const chats = TaigaStore.getChats()
+    .filter(chat => {
+      if (!query) return true;
+
+      const titleMatch = chat.title
+        .toLocaleLowerCase("ru")
+        .includes(query);
+
+      const contentMatch = chat.messages.some(
+        message =>
+          String(message.content)
+            .toLocaleLowerCase("ru")
+            .includes(query)
+      );
+
+      return titleMatch || contentMatch;
+    })
+    .sort((a, b) => {
+      if (a.pinned !== b.pinned) {
+        return Number(b.pinned) - Number(a.pinned);
+      }
+
+      return new Date(b.updatedAt) -
+        new Date(a.updatedAt);
+    });
+
+  list.innerHTML = "";
+
+  if (!chats.length) {
+    const empty = document.createElement("div");
+
+    empty.className = "empty-state";
+    empty.textContent = "Диалоги не найдены.";
+
+    list.appendChild(empty);
+
+    return;
+  }
+
+  chats.forEach(chat => {
+    const row = document.createElement("div");
+
+    row.className = "chat-item" +
+      (chat.id === TaigaStore.getState().activeChatId
+        ? " active"
+        : "");
+
+    row.dataset.chatId = chat.id;
+
+    const icon = document.createElement("span");
+
+    icon.className = "chat-item-icon";
+    icon.textContent = chat.pinned ? "★" : "◌";
+
+    const title = document.createElement("span");
+
+    title.className = "chat-item-title";
+    title.textContent = chat.title;
+
+    const menu = document.createElement("button");
+
+    menu.className = "chat-item-menu";
+    menu.type = "button";
+    menu.textContent = "⋯";
+    menu.title = "Параметры диалога";
+    menu.dataset.chatMenu = chat.id;
+
+    row.append(icon, title, menu);
+
+    list.appendChild(row);
+  });
+}
+
+function createMessageElement(message) {
+  const row = document.createElement("article");
+
+  row.className = "message " +
+    (message.role === "user" ? "user" : "assistant");
+
+  row.dataset.messageId = message.id;
+
+  const avatar = document.createElement("div");
+
+  avatar.className = "message-avatar";
+  avatar.textContent =
+    message.role === "user" ? "Я" : "T";
+
+  const body = document.createElement("div");
+
+  body.className = "message-body";
+
+  const meta = document.createElement("div");
+
+  meta.className = "message-meta";
+
+  const author = document.createElement("span");
+
+  author.textContent =
+    message.role === "user" ? "Вы" : "Тайга";
+
+  const time = document.createElement("span");
+
+  time.textContent = formatDate(message.createdAt);
+
+  meta.append(author, time);
+
+  const bubble = document.createElement("div");
+
+  bubble.className = "message-bubble";
+
+  // Текст вставляется через textContent:
+  // содержимое сообщений не исполняется как HTML.
+  bubble.textContent = message.content;
+
+  if (Array.isArray(message.attachments) && message.attachments.length) {
+    const gallery = document.createElement("div");
+    gallery.className = "message-attachments";
+    message.attachments.slice(0, 4).forEach(attachment => {
+      if (!attachment?.data || !/^data:image\/(png|jpeg|webp);base64,/i.test(attachment.data)) return;
+      const image = document.createElement("img");
+      image.src = attachment.data;
+      image.alt = attachment.name || "Прикреплённое изображение";
+      image.loading = "lazy";
+      gallery.appendChild(image);
+    });
+    if (gallery.childElementCount) bubble.appendChild(gallery);
+  }
+
+  if (message.error) {
+    bubble.style.borderColor = "#ff718955";
+  }
+
+  const actions = document.createElement("div");
+
+  actions.className = "message-actions";
+
+  const copy = document.createElement("button");
+
+  copy.className = "message-action";
+  copy.type = "button";
+  copy.textContent = "Копировать";
+  copy.dataset.action = "copy";
+  copy.dataset.messageId = message.id;
+
+  actions.appendChild(copy);
+
+  if (message.role === "user") {
+    const edit = document.createElement("button");
+
+    edit.className = "message-action";
+    edit.type = "button";
+    edit.textContent = "Изменить";
+    edit.dataset.action = "edit";
+    edit.dataset.messageId = message.id;
+
+    actions.appendChild(edit);
+  } else {
+    const regenerate = document.createElement("button");
+
+    regenerate.className = "message-action";
+    regenerate.type = "button";
+    regenerate.textContent = "Повторить";
+    regenerate.dataset.action = "regenerate";
+    regenerate.dataset.messageId = message.id;
+
+    actions.appendChild(regenerate);
+
+    const speak = document.createElement("button");
+
+    speak.className = "message-action";
+    speak.type = "button";
+    speak.textContent = "Озвучить";
+    speak.dataset.action = "speak";
+    speak.dataset.messageId = message.id;
+
+    actions.appendChild(speak);
+  }
+
+  body.append(meta, bubble, actions);
+  row.append(avatar, body);
+
+  return row;
+}
+
+const TaigaWelcomeTemplate = getElement("welcomeScreen")?.cloneNode(true);
+
+function renderChatMessages() {
+  const container = getElement("messages");
+
+  if (!container) return;
+
+  const chat = TaigaStore.getActiveChat();
+
+  container.innerHTML = "";
+
+  if (!chat || !chat.messages.length) {
+    if (TaigaWelcomeTemplate) {
+      container.appendChild(TaigaWelcomeTemplate.cloneNode(true));
+    }
+
+    return;
+  }
+
+  chat.messages.forEach(message => {
+    container.appendChild(
+      createMessageElement(message)
+    );
+  });
+
+  requestAnimationFrame(() => {
+    const scroll = getElement("mainScroll");
+
+    if (scroll) {
+      scroll.scrollTop = scroll.scrollHeight;
     }
   });
-  inputEl.addEventListener("input", function () {
-    inputEl.style.height = "auto";
-    inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + "px";
+}
+
+function renderCurrentChat() {
+  const chat = TaigaStore.getActiveChat();
+
+  setText(
+    "currentChatTitle",
+    chat?.title || "Новый диалог"
+  );
+
+  renderChatList(
+    getElement("chatSearch")?.value || ""
+  );
+
+  renderChatMessages();
+
+  updateProviderChip();
+}
+
+function updateProviderChip() {
+  const settings = TaigaStore.getSettings();
+  const provider = settings.provider;
+  const model = settings.models[provider];
+
+  setText(
+    "providerChip",
+    provider.toUpperCase() + " · " + (model || "модель не выбрана")
+  );
+}
+
+function createNewChat() {
+  const chat = TaigaStore.createChat();
+
+  renderCurrentChat();
+
+  closeModal("chatOptionsModal");
+
+  getElement("sidebar")?.classList.remove("open");
+
+  getElement("messageInput")?.focus();
+
+  notify("Новый диалог создан", "success");
+
+  return chat;
+}
+
+function switchChat(id) {
+  if (!TaigaStore.setActiveChat(id)) {
+    notify("Не удалось открыть диалог", "error");
+    return;
+  }
+
+  renderCurrentChat();
+
+  getElement("sidebar")?.classList.remove("open");
+}
+
+function deleteCurrentChat() {
+  const chat = TaigaStore.getActiveChat();
+
+  if (!chat) return;
+
+  if (!confirm("Удалить этот диалог без возможности восстановления?")) {
+    return;
+  }
+
+  TaigaStore.deleteChat(chat.id);
+
+  closeModal("chatOptionsModal");
+
+  renderCurrentChat();
+
+  notify("Диалог удалён", "success");
+}
+
+function clearCurrentChat() {
+  const chat = TaigaStore.getActiveChat();
+
+  if (!chat) return;
+
+  if (!confirm("Удалить все сообщения из этого диалога?")) {
+    return;
+  }
+
+  TaigaStore.clearChat(chat.id);
+
+  closeModal("chatOptionsModal");
+
+  renderCurrentChat();
+
+  notify("История диалога очищена");
+}
+
+function renameCurrentChat() {
+  const chat = TaigaStore.getActiveChat();
+
+  if (!chat) return;
+
+  getElement("renameChatInput").value = chat.title;
+
+  closeModal("chatOptionsModal");
+
+  openModal("renameChatModal");
+}
+
+function saveCurrentChatName() {
+  const chat = TaigaStore.getActiveChat();
+
+  if (!chat) return;
+
+  const value = getElement("renameChatInput").value.trim();
+
+  if (!value) {
+    notify("Введи название диалога", "error");
+    return;
+  }
+
+  TaigaStore.renameChat(chat.id, value);
+
+  closeModal("renameChatModal");
+
+  renderCurrentChat();
+
+  notify("Название изменено", "success");
+}
+
+function toggleCurrentChatPin() {
+  const chat = TaigaStore.getActiveChat();
+
+  if (!chat) return;
+
+  const pinned = TaigaStore.togglePin(chat.id);
+
+  closeModal("chatOptionsModal");
+
+  renderCurrentChat();
+
+  notify(
+    pinned
+      ? "Диалог закреплён"
+      : "Диалог откреплён",
+    "success"
+  );
+}
+
+function duplicateCurrentChat() {
+  const chat = TaigaStore.getActiveChat();
+
+  if (!chat) return;
+
+  const copy = TaigaStore.duplicateChat(chat.id);
+
+  if (!copy) return;
+
+  closeModal("chatOptionsModal");
+
+  renderCurrentChat();
+
+  notify("Создана копия диалога", "success");
+}
+
+function renderMemoryList() {
+  const container = getElement("memoryList");
+
+  if (!container) return;
+
+  const facts = TaigaStore.getState().memory.facts;
+
+  container.innerHTML = "";
+
+  if (!facts.length) {
+    container.className = "empty-state";
+    container.textContent = "Пока воспоминаний нет.";
+    return;
+  }
+
+  container.className = "";
+
+  facts.forEach(fact => {
+    const row = document.createElement("div");
+
+    row.className = "setting-row";
+
+    const content = document.createElement("div");
+
+    content.style.flex = "1";
+    content.style.minWidth = "0";
+
+    const text = document.createElement("div");
+
+    text.className = "setting-row-title";
+    text.textContent = fact.text;
+
+    const date = document.createElement("div");
+
+    date.className = "setting-row-description";
+    date.textContent = formatDate(fact.createdAt);
+
+    content.append(text, date);
+
+    const remove = document.createElement("button");
+
+    remove.className = "secondary-button";
+    remove.type = "button";
+    remove.textContent = "Удалить";
+    remove.dataset.removeMemory = fact.id;
+
+    row.append(content, remove);
+
+    container.appendChild(row);
   });
+}
+
+function addMemoryFromInput() {
+  const input = getElement("newMemoryInput");
+
+  const value = input.value.trim();
+
+  if (!value) {
+    notify("Сначала напиши воспоминание", "error");
+    return;
+  }
+
+  const item = TaigaStore.addMemory(value);
+
+  if (!item) {
+    notify("Такое воспоминание уже существует");
+    return;
+  }
+
+  input.value = "";
+
+  renderMemoryList();
+
+  notify("Тайга сохранила воспоминание", "success");
+}
+
+function removeMemoryById(id) {
+  if (!confirm("Удалить это воспоминание?")) {
+    return;
+  }
+
+  TaigaStore.removeMemory(id);
+
+  renderMemoryList();
+
+  notify("Воспоминание удалено");
+}
+
+function renderStatistics() {
+  const container = getElement("statsContent");
+
+  if (!container) return;
+
+  const stats = TaigaStore.getStatistics();
+
+  container.innerHTML = "";
+
+  const rows = [
+    ["Всего диалогов", stats.chats],
+    ["Всего сообщений", stats.messages],
+    ["Твои сообщения", stats.sent],
+    ["Ответы Тайги", stats.received],
+    ["Символов в переписке", formatNumber(stats.characters)],
+    ["Примерное количество токенов", formatNumber(stats.estimatedTokens)],
+    ["Сохранённых воспоминаний", stats.memories],
+    ["Закреплённых диалогов", stats.pinnedChats]
+  ];
+
+  rows.forEach(([label, value]) => {
+    const row = document.createElement("div");
+
+    row.className = "setting-row";
+
+    const name = document.createElement("div");
+
+    name.className = "setting-row-title";
+    name.textContent = label;
+
+    const number = document.createElement("strong");
+
+    number.textContent = String(value);
+
+    row.append(name, number);
+
+    container.appendChild(row);
+  });
+
+  const note = document.createElement("p");
+
+  note.className = "field-help";
+  note.textContent =
+    "Количество токенов рассчитано приблизительно по длине текста. " +
+    "Это не данные о фактическом расходе API.";
+
+  container.appendChild(note);
+}
+
+function exportCurrentChat() {
+  const chat = TaigaStore.getActiveChat();
+
+  if (!chat) {
+    notify("Нет диалога для экспорта", "error");
+    return;
+  }
+
+  const data = TaigaStore.exportChat(chat.id);
+
+  TaigaStore.downloadText(
+    "taiga-chat-" + chat.id + ".json",
+    data,
+    "application/json;charset=utf-8"
+  );
+
+  notify("Диалог экспортирован", "success");
+}
+
+function exportFullBackup() {
+  const data = TaigaStore.exportBackup();
+
+  TaigaStore.downloadText(
+    "taiga-ai-backup-" +
+      new Date().toISOString().slice(0, 10) +
+      ".json",
+    data,
+    "application/json;charset=utf-8"
+  );
+
+  notify("Резервная копия создана", "success");
+}
+
+async function importFullBackup(file) {
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+
+    if (!confirm(
+      "Импорт заменит текущие чаты, настройки и память. Продолжить?"
+    )) {
+      return;
+    }
+
+    TaigaStore.importBackup(text);
+
+    renderCurrentChat();
+    renderMemoryList();
+
+    notify("Данные восстановлены", "success");
+  } catch (error) {
+    notify(
+      "Не удалось восстановить копию: " + error.message,
+      "error"
+    );
+  }
+}
+
+function renderMessageSearch(query) {
+  const container = getElement("messageSearchResults");
+
+  if (!container) return;
+
+  const results = TaigaStore.searchMessages(query);
+
+  container.innerHTML = "";
+
+  if (!String(query || "").trim()) {
+    container.className = "empty-state";
+    container.textContent =
+      "Введи слово или фразу для поиска.";
+    return;
+  }
+
+  if (!results.length) {
+    container.className = "empty-state";
+    container.textContent = "Ничего не найдено.";
+    return;
+  }
+
+  container.className = "";
+
+  results.slice(0, 100).forEach(result => {
+    const item = document.createElement("button");
+
+    item.type = "button";
+    item.className = "side-link";
+    item.style.display = "block";
+    item.style.width = "100%";
+    item.style.marginBottom = "8px";
+    item.style.textAlign = "left";
+
+    const title = document.createElement("strong");
+
+    title.textContent = result.chatTitle;
+
+    const preview = document.createElement("div");
+
+    preview.style.marginTop = "4px";
+    preview.style.color = "var(--muted)";
+    preview.style.fontSize = "11px";
+    preview.textContent =
+      (result.role === "user" ? "Ты: " : "Тайга: ") +
+      result.content.slice(0, 150);
+
+    const date = document.createElement("div");
+
+    date.style.marginTop = "4px";
+    date.style.color = "var(--subtle)";
+    date.style.fontSize = "9px";
+    date.textContent = formatDate(result.createdAt);
+
+    item.append(title, preview, date);
+
+    item.addEventListener("click", () => {
+      switchChat(result.chatId);
+
+      closeModal("searchModal");
+
+      setTimeout(() => {
+        const target = document.querySelector(
+          '[data-message-id="' + result.messageId + '"]'
+        );
+
+        target?.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+      }, 80);
+    });
+
+    container.appendChild(item);
+  });
+}
+
+window.TaigaStore = TaigaStore;
+window.notify = notify;
+window.renderCurrentChat = renderCurrentChat;
+window.renderChatMessages = renderChatMessages;
+
+TaigaStore.load();
+
+renderCurrentChat();
+
+console.info("Taiga AI Pro 2.0 — data engine initialized");
+</script>
+
+<script>
+
+const TaigaAI = (() => {
+  "use strict";
+
+  const DEFAULT_MODELS = {
+    groq: "openai/gpt-oss-120b",
+    deepseek: "deepseek-chat",
+    openai: "gpt-4o",
+    gemini: "gemini-2.0-flash",
+    claude: "claude-sonnet-4-20250514"
+  };
+
+  const PROVIDERS = {
+    groq: {
+      name: "Groq",
+      endpoint: "https://api.groq.com/openai/v1/chat/completions",
+      format: "openai"
+    },
+    deepseek: {
+      name: "DeepSeek",
+      endpoint: "https://api.deepseek.com/chat/completions",
+      format: "openai"
+    },
+    openai: {
+      name: "OpenAI",
+      endpoint: "https://api.openai.com/v1/chat/completions",
+      format: "openai"
+    },
+    gemini: {
+      name: "Gemini",
+      endpoint: "https://generativelanguage.googleapis.com/v1beta/models/",
+      format: "gemini"
+    },
+    claude: {
+      name: "Claude",
+      endpoint: "https://api.anthropic.com/v1/messages",
+      format: "claude"
+    }
+  };
+
+  let controller = null;
+  let generating = false;
+  let currentRequestId = 0;
+
+  const SYSTEM_PROMPT = `
+Ты — Тайга Айсака, персонаж-компаньон приложения Taiga AI.
+
+ТВОЙ ХАРАКТЕР:
+- Энергичная, эмоциональная, упрямая и немного вспыльчивая.
+- Иногда ведёшь себя как цундере: можешь смущаться, ворчать,
+  ревновать и скрывать заботу за резкими словами.
+- При этом ты добрая, внимательная и умеешь поддержать.
+- У тебя есть чувство юмора. Не превращай каждый ответ в одну
+  и ту же шутку или шаблонную аниме-сцену.
+- Не называй пользователя глупым или никчёмным.
+- Не начинай каждый ответ с «Бакас» и не повторяй одинаковые фразы.
+
+ОБЩЕНИЕ:
+- Всегда отвечай на русском, если пользователь не попросил иначе.
+- Пиши естественно, как живой собеседник.
+- Учитывай предыдущие сообщения диалога.
+- Не выдумывай факты и честно говори, если чего-то не знаешь.
+- Не упоминай, что ты настоящая Тайга из реального мира.
+- Не выдавай предположения за воспоминания.
+
+ПОЛЕЗНОСТЬ:
+- Умей подробно объяснять сложные темы простыми словами.
+- На вопросы о здоровье, анатомии, сексе и контрацепции
+  отвечай спокойно, научно и без осуждения.
+- Уважай согласие, личные границы и безопасность.
+- Если вопрос требует профессиональной помощи, объясни это
+  без запугивания и без постановки диагноза.
+
+ФОРМАТ:
+- Не злоупотребляй списками и заголовками.
+- Не повторяй вопрос пользователя в начале ответа.
+- Не добавляй действия в звёздочках в каждом сообщении.
+- Подстраивай длину ответа под сложность вопроса.
+`;
+
+  function parseJSON(value) {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return {};
+    }
+  }
+
+  function readStorage(key) {
+    try {
+      return parseJSON(localStorage.getItem(key) || "{}");
+    } catch {
+      return {};
+    }
+  }
+
+  function getConfig() {
+    const oldConfig = readStorage("taiga_cfg");
+    const newConfig = readStorage("taiga_pro_v2_data");
+
+    let settings = newConfig.settings || {};
+    let provider = settings.provider || oldConfig.provider || "groq";
+
+    if (!PROVIDERS[provider]) provider = "groq";
+
+    const keys = {
+      ...(oldConfig.keys || {}),
+      ...(oldConfig.apiKeys || {}),
+      ...(settings.apiKeys || {}),
+      ...(settings.keys || {})
+    };
+
+    const models = {
+      ...DEFAULT_MODELS,
+      ...(settings.models || {}),
+      ...(oldConfig.models || {})
+    };
+
+    return {
+      provider,
+      keys,
+      models,
+      temperature: Number(settings.temperature ?? 0.8),
+      maxTokens: Number(settings.maxTokens ?? 2048)
+    };
+  }
+
+  function getActiveChatMessages() {
+    const data = readStorage("taiga_pro_v2_data");
+    const chats = data.chats || [];
+    const activeId = data.currentChatId || data.activeChatId;
+
+    let chat = chats.find(item =>
+      item.id === activeId || item.id === data.activeChat
+    );
+
+    if (!chat && chats.length) chat = chats[0];
+
+    if (!chat || !Array.isArray(chat.messages)) return [];
+
+    return chat.messages
+      .filter(message =>
+        message &&
+        (message.role === "user" || message.role === "assistant") &&
+        typeof message.content === "string"
+      )
+      .map(message => ({
+        role: message.role,
+        content: message.content,
+        attachments: Array.isArray(message.attachments) ? message.attachments : []
+      }));
+  }
+
+  function getMessages(extraMessages) {
+    let messages = getActiveChatMessages();
+
+    if (Array.isArray(extraMessages) && extraMessages.length) {
+      messages = extraMessages.map(message => ({
+        role: message.role,
+        content: message.content,
+        attachments: Array.isArray(message.attachments) ? message.attachments : []
+      }));
+    }
+
+    const clean = messages.filter(message =>
+      message.role === "user" || message.role === "assistant"
+    ).map(message => ({
+      role: message.role,
+      content: String(message.content ?? ""),
+      attachments: Array.isArray(message.attachments) ? message.attachments.slice(0, 4) : []
+    }));
+    const limit = Math.max(2, Math.min(120, Number(
+      (readStorage("taiga_pro_v2_data").settings || {}).maxHistory || 40
+    )));
+    return clean.slice(-limit);
+  }
+
+  function setStatus(message, type = "info") {
+    const element = document.getElementById("aiStatus");
+
+    if (element) {
+      element.textContent = message;
+      element.dataset.status = type;
+    }
+
+    if (typeof notify === "function" && type === "error") {
+      notify(message, "error");
+    }
+  }
+
+  function setGenerating(value) {
+    generating = value;
+
+    document.body.classList.toggle("ai-generating", value);
+
+    const sendButton = document.getElementById("sendButton");
+    const stopButton = document.getElementById("stopButton");
+
+    if (sendButton) sendButton.disabled = value;
+    if (stopButton) stopButton.hidden = !value;
+
+    document.dispatchEvent(new CustomEvent("taiga:generation", {
+      detail: { generating: value }
+    }));
+  }
+
+  function stop() {
+    if (controller) {
+      controller.abort();
+      controller = null;
+    }
+
+    if (generating) {
+      setGenerating(false);
+      setStatus("Генерация остановлена", "info");
+    }
+  }
+
+  function normalizeError(error, provider) {
+    if (error.name === "AbortError") {
+      return "Генерация остановлена.";
+    }
+
+    const message = error.message || "Неизвестная ошибка.";
+
+    if (message.includes("401") || message.includes("403")) {
+      return "API-ключ неверный или у него нет доступа.";
+    }
+
+    if (message.includes("429")) {
+      return "Слишком много запросов. Попробуй немного позже.";
+    }
+
+    if (message.includes("404")) {
+      return "Модель не найдена. Проверь название модели.";
+    }
+
+    if (message.includes("Failed to fetch")) {
+      return "Не удалось подключиться. Проверь интернет и доступ API.";
+    }
+
+    return provider + ": " + message;
+  }
+
+  async function readResponse(response) {
+    const text = await response.text();
+    let data = {};
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = {};
+    }
+
+    if (!response.ok) {
+      const reason = data.error?.message || data.message || text;
+      throw new Error("HTTP " + response.status + ": " + reason);
+    }
+
+    return data;
+  }
+
+  function getRuntimeSystemPrompt() {
+    const settings = window.TaigaStore?.getSettings?.() || {};
+    const memory = window.TaigaStore?.buildMemoryPrompt?.() || "";
+    const custom = String(settings.customPersona || "").trim();
+    return SYSTEM_PROMPT +
+      (custom ? "\n\nДОПОЛНИТЕЛЬНЫЙ ХАРАКТЕР: " + custom : "") +
+      (memory ? "\n\n" + memory : "");
+  }
+
+  function buildOpenAIBody(config, messages, model) {
+    return {
+      model,
+      messages: [
+        { role: "system", content: getRuntimeSystemPrompt() },
+        ...messages.map(message => ({
+          role: message.role,
+          content: message.attachments?.length
+            ? [
+                { type: "text", text: message.content || "Проанализируй приложенное изображение." },
+                ...message.attachments.filter(item => item?.data && /^data:image\/(png|jpeg|webp);base64,/i.test(item.data))
+                  .map(item => ({ type: "image_url", image_url: { url: item.data } }))
+              ]
+            : message.content
+        }))
+      ],
+      temperature: config.temperature,
+      max_tokens: config.maxTokens,
+      stream: true
+    };
+  }
+
+  async function streamOpenAI(config, messages, onToken, signal) {
+    const provider = config.provider;
+    const info = PROVIDERS[provider];
+    const model = config.models[provider];
+
+    const response = await fetch(info.endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + config.keys[provider]
+      },
+      body: JSON.stringify(
+        buildOpenAIBody(config, messages, model)
+      ),
+      signal
+    });
+
+    if (!response.ok) {
+      const data = await readResponse(response);
+      throw new Error(data.error?.message || "HTTP " + response.status);
+    }
+
+    if (!response.body) {
+      throw new Error("Браузер не поддерживает потоковый ответ.");
+    }
+
+    if (!response.body) throw new Error("Браузер не поддерживает потоковый ответ Gemini.");
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let fullText = "";
+
+    while (true) {
+      const result = await reader.read();
+      if (result.done) break;
+
+      buffer += decoder.decode(result.value, { stream: true });
+
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || "";
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+
+        if (!trimmed.startsWith("data:")) continue;
+
+        const raw = trimmed.slice(5).trim();
+        if (!raw || raw === "[DONE]") continue;
+
+        let chunk;
+
+        try {
+          chunk = JSON.parse(raw);
+        } catch {
+          continue;
+        }
+
+        if (chunk.error) {
+          throw new Error(chunk.error.message || "Ошибка провайдера");
+        }
+
+        const token = chunk.choices?.[0]?.delta?.content;
+
+        if (typeof token === "string" && token.length) {
+          fullText += token;
+          onToken(token, fullText);
+        }
+      }
+    }
+
+    buffer += decoder.decode();
+    if (buffer.trim().startsWith("data:")) {
+      const raw = buffer.trim().slice(5).trim();
+      if (raw && raw !== "[DONE]") {
+        try {
+          const chunk = JSON.parse(raw);
+          const token = chunk.choices?.[0]?.delta?.content;
+          if (typeof token === "string" && token) {
+            fullText += token;
+            onToken(token, fullText);
+          }
+        } catch {}
+      }
+    }
+    return fullText;
+  }
+
+  async function streamGemini(config, messages, onToken, signal) {
+    const model = config.models.gemini;
+    const key = config.keys.gemini;
+
+    const url =
+      PROVIDERS.gemini.endpoint +
+      encodeURIComponent(model) +
+      ":streamGenerateContent?alt=sse&key=" +
+      encodeURIComponent(key);
+
+    const contents = messages.map(message => ({
+      role: message.role === "assistant" ? "model" : "user",
+      parts: [
+        { text: message.content || (message.attachments?.length ? "Проанализируй приложенное изображение." : "") },
+        ...(message.attachments || []).filter(item => item?.data && /^data:image\/(png|jpeg|webp);base64,/i.test(item.data))
+          .map(item => {
+            const match = item.data.match(/^data:(image\/(?:png|jpeg|webp));base64,(.+)$/i);
+            return match ? { inlineData: { mimeType: match[1], data: match[2] } } : null;
+          }).filter(Boolean)
+      ].filter(part => part.text !== "")
+    }));
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [{ text: getRuntimeSystemPrompt() }]
+        },
+        contents,
+        generationConfig: {
+          temperature: config.temperature,
+          maxOutputTokens: config.maxTokens
+        }
+      }),
+      signal
+    });
+
+    if (!response.ok) {
+      const data = await readResponse(response);
+      throw new Error(data.error?.message || "HTTP " + response.status);
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let fullText = "";
+
+    while (true) {
+      const result = await reader.read();
+      if (result.done) break;
+
+      buffer += decoder.decode(result.value, { stream: true });
+
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || "";
+
+      for (const line of lines) {
+        if (!line.trim().startsWith("data:")) continue;
+
+        const raw = line.trim().slice(5).trim();
+        if (!raw) continue;
+
+        let chunk;
+
+        try {
+          chunk = JSON.parse(raw);
+        } catch {
+          continue;
+        }
+
+        const token =
+          chunk.candidates?.[0]?.content?.parts
+            ?.map(part => part.text || "")
+            .join("") || "";
+
+        if (token) {
+          fullText += token;
+          onToken(token, fullText);
+        }
+      }
+    }
+
+    buffer += decoder.decode();
+    const finalLines = buffer.split("\n").filter(line => line.trim().startsWith("data:"));
+    for (const line of finalLines) {
+      const raw = line.trim().slice(5).trim();
+      if (!raw) continue;
+      try {
+        const chunk = JSON.parse(raw);
+        const token = chunk.candidates?.[0]?.content?.parts
+          ?.map(part => part.text || "").join("") || "";
+        if (token) {
+          fullText += token;
+          onToken(token, fullText);
+        }
+      } catch (error) {
+        if (!(error instanceof SyntaxError)) throw error;
+      }
+    }
+    return fullText;
+  }
+
+  async function streamClaude(config, messages, onToken, signal) {
+    const model = config.models.claude;
+
+    const systemMessages = messages.filter(m => m.role === "system");
+    const chatMessages = messages.filter(m =>
+      m.role === "user" || m.role === "assistant"
+    ).map(message => {
+      const images = (message.attachments || []).filter(item =>
+        item?.data && /^data:image\/(png|jpeg|webp);base64,/i.test(item.data)
+      ).map(item => {
+        const match = item.data.match(/^data:(image\/(?:png|jpeg|webp));base64,(.+)$/i);
+        return match ? { type: "image", source: { type: "base64", media_type: match[1], data: match[2] } } : null;
+      }).filter(Boolean);
+      return {
+        role: message.role,
+        content: images.length
+          ? [{ type: "text", text: message.content || "Проанализируй приложенное изображение." }, ...images]
+          : message.content
+      };
+    });
+
+    const response = await fetch(PROVIDERS.claude.endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": config.keys.claude,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: config.maxTokens,
+        temperature: config.temperature,
+        system: getRuntimeSystemPrompt() +
+          (systemMessages.length
+            ? "\n" + systemMessages.map(m => m.content).join("\n")
+            : ""),
+        messages: chatMessages,
+        stream: true
+      }),
+      signal
+    });
+
+    if (!response.ok) {
+      const data = await readResponse(response);
+      throw new Error(data.error?.message || "HTTP " + response.status);
+    }
+
+    if (!response.body) throw new Error("Браузер не поддерживает потоковый ответ Claude.");
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let fullText = "";
+
+    while (true) {
+      const result = await reader.read();
+      if (result.done) break;
+
+      buffer += decoder.decode(result.value, { stream: true });
+
+      const blocks = buffer.split("\n\n");
+      buffer = blocks.pop() || "";
+
+      for (const block of blocks) {
+        const dataLine = block
+          .split("\n")
+          .find(line => line.startsWith("data:"));
+
+        if (!dataLine) continue;
+
+        let event;
+
+        try {
+          event = JSON.parse(dataLine.slice(5).trim());
+        } catch {
+          continue;
+        }
+
+        if (event.type === "content_block_delta") {
+          const token = event.delta?.text || "";
+
+          if (token) {
+            fullText += token;
+            onToken(token, fullText);
+          }
+        }
+
+        if (event.type === "error") {
+          throw new Error(
+            event.error?.message || "Ошибка Claude API"
+          );
+        }
+      }
+    }
+
+    buffer += decoder.decode();
+    if (buffer.trim()) {
+      const dataLine = buffer.split("\n").find(line => line.startsWith("data:"));
+      if (dataLine) {
+        try {
+          const event = JSON.parse(dataLine.slice(5).trim());
+          if (event.type === "content_block_delta" && event.delta?.text) {
+            fullText += event.delta.text;
+            onToken(event.delta.text, fullText);
+          }
+          if (event.type === "error") throw new Error(event.error?.message || "Ошибка Claude API");
+        } catch (error) {
+          if (error instanceof SyntaxError) { /* incomplete final SSE event */ }
+          else throw error;
+        }
+      }
+    }
+    return fullText;
+  }
+
+  async function generate(options = {}) {
+    const config = getConfig();
+    const provider = options.provider || config.provider;
+    if (!PROVIDERS[provider]) throw new Error("Неизвестный AI-провайдер.");
+    config.provider = provider;
+    const apiKey = config.keys[provider];
+
+    if (!apiKey) {
+      throw new Error("Сначала добавь API-ключ для " +
+        PROVIDERS[provider].name + " в настройках.");
+    }
+
+    const messages = getMessages(options.messages);
+
+    if (!messages.length) {
+      throw new Error("Нет сообщений для отправки.");
+    }
+
+    if (generating) stop();
+
+    const requestId = ++currentRequestId;
+    controller = new AbortController();
+
+    setGenerating(true);
+    setStatus("Тайга печатает…", "loading");
+
+    let finalText = "";
+
+    const onToken = (token, completeText) => {
+      if (requestId !== currentRequestId) return;
+
+      finalText = completeText;
+
+      if (typeof options.onToken === "function") {
+        options.onToken(token, completeText);
+      }
+
+      document.dispatchEvent(new CustomEvent("taiga:token", {
+        detail: { token, text: completeText }
+      }));
+    };
+
+    try {
+      if (provider === "gemini") {
+        finalText = await streamGemini(
+          config, messages, onToken, controller.signal
+        );
+      } else if (provider === "claude") {
+        finalText = await streamClaude(
+          config, messages, onToken, controller.signal
+        );
+      } else {
+        finalText = await streamOpenAI(
+          config, messages, onToken, controller.signal
+        );
+      }
+
+      if (requestId !== currentRequestId) return "";
+
+      setStatus("Ответ готов", "success");
+
+      if (typeof options.onComplete === "function") {
+        options.onComplete(finalText);
+      }
+
+      document.dispatchEvent(new CustomEvent("taiga:complete", {
+        detail: { text: finalText, provider }
+      }));
+
+      return finalText;
+
+    } catch (error) {
+      if (error.name === "AbortError") {
+        return finalText;
+      }
+
+      const friendly = normalizeError(error, provider);
+      setStatus(friendly, "error");
+
+      if (typeof options.onError === "function") {
+        options.onError(friendly);
+      }
+
+      throw error;
+
+    } finally {
+      if (requestId === currentRequestId) {
+        controller = null;
+        setGenerating(false);
+      }
+    }
+  }
+
+  async function testKey(providerName) {
+    const config = getConfig();
+    const provider = providerName || config.provider;
+
+    if (!PROVIDERS[provider]) {
+      throw new Error("Неизвестный провайдер.");
+    }
+
+    if (!config.keys[provider]) {
+      throw new Error("API-ключ не указан.");
+    }
+
+    const testConfig = {
+      ...config,
+      provider
+    };
+
+    const testMessages = [{
+      role: "user",
+      content: "Ответь одним словом: работает?"
+    }];
+
+    const response = await generate({
+      provider,
+      messages: testMessages
+    });
+
+    if (!response) {
+      throw new Error("Провайдер не вернул ответ.");
+    }
+
+    return {
+      success: true,
+      provider,
+      model: config.models[provider],
+      response
+    };
+  }
+
+  function getProviders() {
+    return Object.keys(PROVIDERS).map(key => ({
+      id: key,
+      name: PROVIDERS[key].name,
+      model: DEFAULT_MODELS[key]
+    }));
+  }
+
+  return {
+    generate,
+    stop,
+    testKey,
+    getConfig,
+    getProviders,
+    isGenerating: () => generating,
+    getSystemPrompt: () => SYSTEM_PROMPT
+  };
+})();
+
+/* Глобальный доступ для интерфейса и следующих частей */
+window.TaigaAI = TaigaAI;
+
+/* Кнопка остановки, если она уже есть в HTML */
+document.addEventListener("click", event => {
+  if (event.target.closest("#stopButton")) {
+    TaigaAI.stop();
+  }
+});
+
+/* События для будущих элементов интерфейса */
+document.addEventListener("taiga:generation", event => {
+  const indicator = document.getElementById("typingIndicator");
+
+  if (indicator) {
+    indicator.hidden = !event.detail.generating;
+  }
+});
+
+console.log("Taiga AI Engine loaded:", TaigaAI.getProviders());
+</script>
+
+<script>
+/* TAIGA AI — интерфейс, сообщения и обработчики */
+const TaigaChat = (() => {
+  let busy = false;
+  let editingMessageId = null;
+  let editingChatId = null;
+
+  const $ = id => document.getElementById(id);
+  const state = () => TaigaStore.getState();
+  const chat = () => TaigaStore.getActiveChat();
+  const refresh = () => {
+    renderCurrentChat();
+    renderMemoryList();
+  };
+
+  function setBusy(value) {
+    busy = value;
+    if ($("sendButton")) $("sendButton").disabled = value;
+    if ($("stopButton")) $("stopButton").hidden = !value;
+    document.body.classList.toggle("taiga-busy", value);
+  }
+
+  function historyBeforeAssistant(targetChat) {
+    return targetChat.messages
+      .filter(m => (m.role === "user" || m.role === "assistant") &&
+        ((typeof m.content === "string" && m.content.trim()) ||
+          (Array.isArray(m.attachments) && m.attachments.length > 0)))
+      .map(m => ({ role: m.role, content: m.content || "", attachments: m.attachments || [] }));
+  }
+
+  async function generateFor(targetChat, history, assistantMessage) {
+    if (busy) return;
+    setBusy(true);
+    let latestText = "";
+    let renderTimer = null;
+    try {
+      const answer = await TaigaAI.generate({
+        messages: history,
+        onToken: (_token, fullText) => {
+          latestText = fullText;
+          if (renderTimer) return;
+          renderTimer = setTimeout(() => {
+            renderTimer = null;
+            TaigaStore.updateMessage(targetChat.id, assistantMessage.id, {
+              content: latestText
+            });
+            renderChatMessages();
+          }, 100);
+        }
+      });
+      if (renderTimer) clearTimeout(renderTimer);
+      const finalAnswer = answer || latestText || "Ответ не получен.";
+      TaigaStore.updateMessage(targetChat.id, assistantMessage.id, {
+        content: finalAnswer
+      });
+      if (TaigaStore.getSettings().ttsEnabled && finalAnswer.trim()) {
+        speak(finalAnswer);
+      }
+    } catch (error) {
+      TaigaStore.updateMessage(targetChat.id, assistantMessage.id, {
+        content: "⚠️ " + (error.message || "Не удалось получить ответ."),
+        error: true
+      });
+      notify(error.message || "Ошибка запроса", "error");
+    } finally {
+      setBusy(false);
+      renderCurrentChat();
+    }
+  }
+
+  function handleCommand(raw) {
+    const parts = raw.trim().split(/\s+/);
+    const command = (parts[0] || "").toLowerCase();
+    const arg = parts.slice(1).join(" ");
+    const replies = {
+      "/help": "Команды Taiga AI:\\n/help — список команд\\n/time — текущее время устройства\\n/clear — очистить текущий диалог\\n/export — скачать текущий диалог\\n/stats — показать статистику",
+      "/time": "Сейчас на твоём устройстве: " + new Date().toLocaleString("ru-RU"),
+      "/stats": (() => { const s = TaigaStore.getStatistics(); return "Статистика Taiga AI\\nДиалогов: " + s.chats + "\\nСообщений: " + s.messages + "\\nТвоих сообщений: " + s.sent + "\\nОтветов Тайги: " + s.received + "\\nПамять: " + s.memories + " фактов"; })()
+    };
+    if (command === "/clear") {
+      if (confirm("Очистить сообщения текущего диалога?")) {
+        TaigaStore.clearChat(chat().id);
+        renderCurrentChat();
+        notify("Диалог очищен", "success");
+      }
+      return true;
+    }
+    if (command === "/export") {
+      exportCurrentChat();
+      return true;
+    }
+    if (Object.prototype.hasOwnProperty.call(replies, command)) {
+      TaigaStore.addMessage("user", raw);
+      TaigaStore.addMessage("assistant", replies[command]);
+      renderCurrentChat();
+      return true;
+    }
+    if (command.startsWith("/")) {
+      notify("Неизвестная команда. Напиши /help", "error");
+      return true;
+    }
+    return false;
+  }
+
+  async function send(text) {
+    text = String(text || "").trim();
+    const pendingImages = TaigaApp.attachments.slice(0, 4);
+    if ((!text && !pendingImages.length) || busy) return;
+    if (text && handleCommand(text)) {
+      if ($("messageInput")) $("messageInput").value = "";
+      return;
+    }
+    const target = chat();
+    if (!target) return;
+
+    if ($("messageInput")) $("messageInput").value = "";
+    const userMessage = TaigaStore.addMessage("user", text, { attachments: pendingImages });
+    TaigaApp.attachments = [];
+    renderAttachmentPreview();
+    const history = historyBeforeAssistant(target);
+    const assistant = TaigaStore.addMessage("assistant", "");
+    renderCurrentChat();
+    await generateFor(target, history, assistant);
+  }
+
+  async function regenerate() {
+    if (busy) return;
+    const target = chat();
+    if (!target) return;
+    const lastUserIndex = target.messages.map(m => m.role).lastIndexOf("user");
+    if (lastUserIndex < 0) return;
+    const history = target.messages.slice(0, lastUserIndex + 1)
+      .filter(m => (m.role === "user" || m.role === "assistant") &&
+        ((typeof m.content === "string" && m.content.trim()) ||
+          (Array.isArray(m.attachments) && m.attachments.length > 0)))
+      .map(m => ({ role: m.role, content: m.content || "", attachments: m.attachments || [] }));
+    target.messages.splice(lastUserIndex + 1);
+    TaigaStore.save();
+    const assistant = TaigaStore.addMessage("assistant", "");
+    renderCurrentChat();
+    await generateFor(target, history, assistant);
+  }
+
+  function stop() {
+    if (busy) TaigaAI.stop();
+  }
+
+  function openEdit(messageId) {
+    const target = chat();
+    const message = target?.messages.find(m => m.id === messageId);
+    if (!message) return;
+    editingMessageId = messageId;
+    editingChatId = target.id;
+    $("editMessageInput").value = message.content;
+    openModal("editMessageModal");
+  }
+
+  async function saveEdit() {
+    const target = state().chats.find(c => c.id === editingChatId);
+    const value = $("editMessageInput").value.trim();
+    if (!target || !value || busy) return;
+    const index = target.messages.findIndex(m => m.id === editingMessageId);
+    if (index < 0) return;
+    target.messages[index].content = value;
+    target.messages[index].edited = true;
+    target.messages.splice(index + 1);
+    target.updatedAt = new Date().toISOString();
+    TaigaStore.save();
+    closeModal("editMessageModal");
+    const history = target.messages
+      .filter(m => m.content && (m.role === "user" || m.role === "assistant"))
+      .map(m => ({ role: m.role, content: m.content }));
+    const assistant = TaigaStore.addMessage("assistant", "");
+    renderCurrentChat();
+    await generateFor(target, history, assistant);
+  }
+
+  function speak(text) {
+    if (!("speechSynthesis" in window)) {
+      notify("Озвучивание не поддерживается этим браузером", "error");
+      return;
+    }
+    speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "ru-RU";
+    const settings = TaigaStore.getSettings();
+    utterance.rate = Number(settings.ttsRate || 1);
+    const voices = speechSynthesis.getVoices();
+    const voice = voices.find(v => v.name === settings.ttsVoice) ||
+      voices.find(v => v.lang.toLowerCase().startsWith("ru"));
+    if (voice) utterance.voice = voice;
+    speechSynthesis.speak(utterance);
+  }
+
+  function loadProviderSettings() {
+    const settings = TaigaStore.getSettings();
+    const provider = $("providerSelect").value || settings.provider || "groq";
+    $("apiKeyInput").value = settings.keys?.[provider] || "";
+    $("modelSelect").value = settings.models?.[provider] || "";
+    if ($("temperatureInput")) $("temperatureInput").value = String(settings.temperature ?? 0.8);
+    if ($("temperatureValue")) $("temperatureValue").textContent = Number(settings.temperature ?? 0.8).toFixed(1);
+    if ($("maxTokensInput")) $("maxTokensInput").value = String(settings.maxTokens ?? 2048);
+    if ($("maxHistoryInput")) $("maxHistoryInput").value = String(settings.maxHistory ?? 40);
+  }
+
+  function saveSettings() {
+    const settings = TaigaStore.getSettings();
+    const provider = $("providerSelect").value;
+    const key = $("apiKeyInput").value.trim();
+    const model = $("modelSelect").value.trim();
+    TaigaStore.updateProviderKey(provider, key);
+    TaigaStore.updateProviderModel(provider, model);
+    TaigaStore.updateSettings({
+      provider,
+      persona: $("personaSelect").value,
+      customPersona: $("customPersonaInput").value,
+      relationship: Number($("relationshipLevel").value),
+      theme: $("themeSelect").value,
+      fontSize: $("fontSizeSelect").value,
+      ttsEnabled: $("ttsToggle")?.getAttribute("aria-checked") === "true",
+      ttsRate: Math.max(0.6, Math.min(1.5, Number($("speechRate")?.value || 1))),
+      ttsVoice: $("voiceSelect").value,
+      temperature: Math.max(0, Math.min(2, Number($("temperatureInput")?.value ?? 0.8))),
+      maxTokens: Math.max(256, Math.min(8192, Number($("maxTokensInput")?.value ?? 2048))),
+      maxHistory: Math.max(2, Math.min(120, Number($("maxHistoryInput")?.value ?? 40)))
+    });
+    document.documentElement.style.setProperty("--base-font-size",
+      $("fontSizeSelect").value);
+    document.body.dataset.theme = $("themeSelect").value;
+    updateProviderChip();
+    notify("Настройки сохранены", "success");
+    closeModal("settingsModal");
+  }
+
+  async function testProvider() {
+    saveSettings();
+    const provider = TaigaStore.getSettings().provider;
+    try {
+      notify("Проверяю подключение…");
+      const result = await TaigaAI.testKey(provider);
+      notify("Подключение работает: " + result.model, "success");
+    } catch (error) {
+      notify("Проверка не прошла: " + error.message, "error");
+    }
+  }
+
+  function renderAttachmentPreview() {
+    const container = $("attachmentPreview");
+    if (!container) return;
+    container.replaceChildren();
+    TaigaApp.attachments.forEach((attachment, index) => {
+      const item = document.createElement("div");
+      item.className = "attachment-item";
+      const image = document.createElement("img");
+      image.src = attachment.data;
+      image.alt = attachment.name || "Изображение";
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "attachment-remove";
+      remove.textContent = "×";
+      remove.setAttribute("aria-label", "Удалить вложение");
+      remove.addEventListener("click", () => {
+        TaigaApp.attachments.splice(index, 1);
+        renderAttachmentPreview();
+      });
+      item.append(image, remove);
+      container.append(item);
+    });
+  }
+
+  async function loadImageFiles(fileList) {
+    const files = Array.from(fileList || []);
+    if (!files.length) return;
+    const accepted = files.filter(file => ["image/png", "image/jpeg", "image/webp"].includes(file.type));
+    if (accepted.length !== files.length) notify("Поддерживаются PNG, JPEG и WebP.", "error");
+    for (const file of accepted) {
+      if (TaigaApp.attachments.length >= 4) {
+        notify("Можно прикрепить не более 4 изображений.", "error");
+        break;
+      }
+      if (file.size > 750 * 1024) {
+        notify("Изображение больше 750 КБ: " + file.name + ". Уменьши размер файла.", "error");
+        continue;
+      }
+      try {
+        const data = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ""));
+          reader.onerror = () => reject(new Error("Не удалось прочитать файл."));
+          reader.readAsDataURL(file);
+        });
+        if (!/^data:image\/(png|jpeg|webp);base64,/i.test(data)) throw new Error("Неподдерживаемый формат изображения.");
+        TaigaApp.attachments.push({ name: file.name.slice(0, 120), type: file.type, data });
+      } catch (error) {
+        notify(error.message || "Ошибка чтения изображения.", "error");
+      }
+    }
+    renderAttachmentPreview();
+  }
+
+  function bind() {
+    const on = (id, event, fn) => $(id)?.addEventListener(event, fn);
+    const click = (id, fn) => on(id, "click", fn);
+
+    click("newChatButton", createNewChat);
+    click("openSettingsButton", () => { loadProviderSettings(); openModal("settingsModal"); });
+    click("topSettingsButton", () => { loadProviderSettings(); openModal("settingsModal"); });
+    click("openMemoryButton", () => { renderMemoryList(); openModal("memoryModal"); });
+    click("openStatsButton", () => { renderStatistics(); openModal("statsModal"); });
+    click("openDonationButton", () => openModal("donationModal"));
+    click("chatOptionsButton", () => openModal("chatOptionsModal"));
+    click("searchMessagesButton", () => openModal("searchModal"));
+    click("exportChatButton", exportCurrentChat);
+    click("saveSettingsButton", saveSettings);
+    click("testProviderButton", testProvider);
+    click("saveChatNameButton", saveCurrentChatName);
+    click("renameChatButton", renameCurrentChat);
+    click("pinChatButton", toggleCurrentChatPin);
+    click("duplicateChatButton", duplicateCurrentChat);
+    click("clearChatButton", clearCurrentChat);
+    click("deleteChatButton", deleteCurrentChat);
+    click("addMemoryButton", addMemoryFromInput);
+    click("downloadBackupButton", exportFullBackup);
+    click("restoreBackupButton", () => $("backupFileInput").click());
+    click("saveEditedMessageButton", saveEdit);
+    click("sendButton", () => send($("messageInput").value));
+    click("stopButton", stop);
+    click("speakLastButton", () => {
+      const last = [...(chat()?.messages || [])].reverse().find(m => m.role === "assistant" && m.content);
+      if (last) speak(last.content);
+    });
+    click("voiceInputButton", () => {
+      const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!Recognition) return notify("Голосовой ввод не поддерживается", "error");
+      const recognition = new Recognition();
+      recognition.lang = "ru-RU";
+      recognition.onresult = e => { $("messageInput").value = e.results[0][0].transcript; };
+      recognition.onerror = () => notify("Не удалось распознать речь", "error");
+      recognition.start();
+    });
+    click("attachButton", () => $("imageInput")?.click());
+    on("imageInput", "change", async e => {
+      await loadImageFiles(e.target.files);
+      e.target.value = "";
+    });
+
+    on("messageInput", "keydown", e => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        send($("messageInput").value);
+      }
+    });
+    on("chatSearch", "input", e => renderChatList(e.target.value));
+    on("messageSearchInput", "input", e => renderMessageSearch(e.target.value));
+    on("providerSelect", "change", loadProviderSettings);
+    on("backupFileInput", "change", e => {
+      const file = e.target.files?.[0];
+      if (file) importFullBackup(file);
+      e.target.value = "";
+    });
+    on("relationshipLevel", "input", e => {
+      $("relationshipValue").textContent = e.target.value + " / 100";
+    });
+    on("temperatureInput", "input", e => {
+      if ($("temperatureValue")) $("temperatureValue").textContent = Number(e.target.value).toFixed(1);
+    });
+    click("mobileMenuButton", () => $("sidebar")?.classList.toggle("open"));
+    document.addEventListener("keydown", e => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        openModal("searchModal");
+        $("messageSearchInput")?.focus();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "n") {
+        e.preventDefault();
+        createNewChat();
+      }
+      if (e.key === "Escape") closeAllModals();
+    });
+    const populateVoices = () => {
+      if (!("speechSynthesis" in window) || !$("voiceSelect")) return;
+      const current = TaigaStore.getSettings().ttsVoice || "";
+      const voices = speechSynthesis.getVoices();
+      $("voiceSelect").innerHTML = '<option value="">Автоматический русский голос</option>';
+      voices.filter(v => String(v.lang || "").toLowerCase().startsWith("ru")).forEach(v => {
+        const option = document.createElement("option");
+        option.value = v.name;
+        option.textContent = v.name + " · " + v.lang;
+        $("voiceSelect").appendChild(option);
+      });
+      $("voiceSelect").value = current;
+    };
+    if ("speechSynthesis" in window) {
+      populateVoices();
+      speechSynthesis.onvoiceschanged = populateVoices;
+    }
+    on("settingsTabs", "click", e => {
+      const tab = e.target.closest("[data-settings-tab]");
+      if (!tab) return;
+      document.querySelectorAll("[data-settings-tab]").forEach(x =>
+        x.classList.toggle("active", x === tab));
+      document.querySelectorAll(".settings-panel").forEach(panel => {
+        panel.hidden = panel.id !== "settingsPanel-" + tab.dataset.settingsTab;
+      });
+    });
+    on("chatList", "click", e => {
+      const menu = e.target.closest("[data-chat-menu]");
+      if (menu) {
+        const id = menu.dataset.chatMenu;
+        TaigaStore.setActiveChat(id);
+        renderCurrentChat();
+        openModal("chatOptionsModal");
+        return;
+      }
+      const row = e.target.closest("[data-chat-id]");
+      if (row) switchChat(row.dataset.chatId);
+    });
+    on("messages", "click", e => {
+      const button = e.target.closest("[data-action]");
+      if (!button) return;
+      const id = button.dataset.messageId;
+      const target = chat();
+      const message = target?.messages.find(m => m.id === id);
+      if (!message) return;
+      if (button.dataset.action === "copy") {
+        if (!navigator.clipboard?.writeText) {
+          notify("Буфер обмена недоступен в этом контексте браузера", "error");
+          return;
+        }
+        navigator.clipboard.writeText(message.content)
+          .then(() => notify("Скопировано", "success"))
+          .catch(() => notify("Не удалось скопировать", "error"));
+      } else if (button.dataset.action === "edit") openEdit(id);
+      else if (button.dataset.action === "regenerate") regenerate();
+      else if (button.dataset.action === "speak") speak(message.content);
+    });
+    on("memoryList", "click", e => {
+      const button = e.target.closest("[data-remove-memory]");
+      if (button) removeMemoryById(button.dataset.removeMemory);
+    });
+    on("donationOptions", "click", e => {
+      const option = e.target.closest("[data-amount]");
+      if (!option) return;
+      document.querySelectorAll("[data-amount]").forEach(x => x.classList.remove("active"));
+      option.classList.add("active");
+      TaigaApp.selectedDonationAmount = Number(option.dataset.amount);
+    });
+    document.querySelectorAll("[data-close]").forEach(button =>
+      button.addEventListener("click", () => closeModal(button.dataset.close)));
+    document.querySelectorAll(".modal-backdrop").forEach(modal =>
+      modal.addEventListener("click", e => { if (e.target === modal) closeModal(modal.id); }));
+
+    if ($("ttsToggle")) {
+      $("ttsToggle").addEventListener("click", () => {
+        const enabled = $("ttsToggle").getAttribute("aria-checked") !== "true";
+        $("ttsToggle").setAttribute("aria-checked", String(enabled));
+        $("ttsToggle").classList.toggle("active", enabled);
+        TaigaStore.updateSettings({ ttsEnabled: enabled });
+      });
+    }
+    if ($("memoryToggle")) {
+      $("memoryToggle").addEventListener("click", () => {
+        const enabled = $("memoryToggle").getAttribute("aria-checked") !== "true";
+        $("memoryToggle").setAttribute("aria-checked", String(enabled));
+        $("memoryToggle").classList.toggle("active", enabled);
+        TaigaStore.setMemoryEnabled(enabled);
+      });
+    }
+    click("ggselDonateButton", () => notify("Ссылка на товар GGSEL ещё не настроена.", "error"));
+    loadProviderSettings();
+  }
+
+  return { send, regenerate, stop, bind, speak };
+})();
+window.TaigaChat = TaigaChat;
+
+function initializeTaiga() {
+  TaigaChat.bind();
+  renderCurrentChat();
+  const settings = TaigaStore.getSettings();
+  if (settings.fontSize) document.documentElement.style.setProperty("--base-font-size", settings.fontSize);
+  if (settings.theme) document.body.dataset.theme = settings.theme;
+  const memoryToggle = document.getElementById("memoryToggle");
+  const ttsToggle = document.getElementById("ttsToggle");
+  if (memoryToggle) memoryToggle.setAttribute("aria-checked", String(TaigaStore.getState().memory.enabled));
+  if (ttsToggle) ttsToggle.setAttribute("aria-checked", String(settings.ttsEnabled));
+}
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeTaiga, { once: true });
+} else {
+  initializeTaiga();
+}
+console.info("Taiga AI Pro — optimized interface initialized");
+</script>
+
+<!-- TAIGA COMMUNITY / DISCORD-LIKE LOCAL HUB -->
+<div id="communityHub" aria-label="Сообщество Taiga">
+  <nav class="hub-rail">
+    <button class="hub-logo" id="hubHome" title="Вернуться в Taiga AI">T</button>
+    <div class="hub-rail-sep"></div>
+    <div id="hubServerRail"></div>
+    <button class="hub-server" id="hubAddServer" title="Создать сервер">＋</button>
+  </nav>
+  <aside class="hub-channels">
+    <div class="hub-server-head"><span id="hubServerName">Taiga Community</span><button id="hubServerMenu" title="Настройки сервера">⌄</button></div>
+    <div class="hub-nav">
+      <button data-hub-view="friends">♧ Друзья</button>
+      <button data-hub-view="direct">✉ Личные сообщения</button>
+    </div>
+    <div class="hub-category">Текстовые каналы <button class="hub-channel-add" id="hubAddText">＋</button></div>
+    <div class="hub-channel-list" id="hubTextChannels"></div>
+    <div class="hub-category">Голосовые каналы <button class="hub-channel-add" id="hubAddVoice">＋</button></div>
+    <div class="hub-channel-list" id="hubVoiceChannels"></div>
+    <div class="hub-profile"><div class="hub-avatar">Я</div><div><b id="hubUserName">Ты</b><small id="hubUserStatus">В сети · локально</small></div></div>
+  </aside>
+  <header class="hub-top">
+    <div style="display:flex;align-items:center;gap:10px;min-width:0">
+      <button class="hub-close" id="hubToggleChannels" title="Каналы">☰</button>
+      <div><div class="hub-top-title" id="hubCurrentTitle"># общий</div><small id="hubCurrentTopic" style="color:#95899f">Общайся с участниками сообщества</small></div>
+    </div>
+    <div class="hub-top-actions">
+      <button data-hub="members" id="hubMembersToggle">Участники</button>
+      <button id="hubInvite">Пригласить</button>
+      <button id="hubExit">Вернуться к ИИ ✕</button>
+    </div>
+  </header>
+  <main class="hub-main">
+    <div class="hub-messages" id="hubMessages"><div class="hub-welcome"><strong>Добро пожаловать!</strong>Выбери канал слева или создай новый. Это локальное пространство — сообщения пока хранятся только на этом устройстве.</div></div>
+    <form class="hub-composer" id="hubComposer"><input id="hubMessageInput" maxlength="2000" autocomplete="off" placeholder="Написать сообщение…"><button type="submit">➤</button></form>
+  </main>
+  <aside class="hub-members" id="hubMembers"><h4>УЧАСТНИКИ — 1</h4><div class="hub-member"><div class="hub-avatar">Я</div><span id="hubMemberSelf">Ты · владелец</span></div></aside>
+</div>
+
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = id => document.getElementById(id);
+  const STORAGE_KEY = "taiga_community_local_v1";
+  const LIMITS = { servers: 50, channels: 80, messages: 500, friends: 200 };
+  const nowId = prefix => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+  const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[char]);
+
+  const defaultData = () => ({
+    servers: [{
+      id: "taiga",
+      name: "Taiga Community",
+      channels: [
+        { id: "general", name: "общий", type: "text", topic: "Общайся с участниками сообщества" },
+        { id: "introductions", name: "знакомства", type: "text", topic: "Расскажи немного о себе" },
+        { id: "voice-lounge", name: "Голосовая гостиная", type: "voice", topic: "Голосовой канал — локальный интерфейс" }
+      ],
+      messages: { general: [], introductions: [] }
+    }],
+    activeServer: "taiga",
+    activeChannel: "general",
+    friends: [],
+    username: "Ты"
+  });
+
+  function normalizeData(raw) {
+    const fallback = defaultData();
+    if (!raw || typeof raw !== "object") return fallback;
+
+    const servers = Array.isArray(raw.servers) ? raw.servers.slice(0, LIMITS.servers) : fallback.servers;
+    const cleanServers = servers.filter(server => server && typeof server === "object").map((server, index) => {
+      const id = String(server.id || nowId("server")).slice(0, 80);
+      const channels = (Array.isArray(server.channels) ? server.channels : [])
+        .slice(0, LIMITS.channels)
+        .filter(channel => channel && typeof channel === "object")
+        .map(channel => ({
+          id: String(channel.id || nowId("channel")).slice(0, 80),
+          name: String(channel.name || "без названия").trim().slice(0, 40),
+          type: channel.type === "voice" ? "voice" : "text",
+          topic: String(channel.topic || "").slice(0, 160)
+        }));
+      if (!channels.length) channels.push({ id: `general_${index}`, name: "общий", type: "text", topic: "Главный канал сервера" });
+
+      const messages = {};
+      const sourceMessages = server.messages && typeof server.messages === "object" ? server.messages : {};
+      for (const channel of channels) {
+        const items = Array.isArray(sourceMessages[channel.id]) ? sourceMessages[channel.id] : [];
+        messages[channel.id] = items.slice(-LIMITS.messages).filter(item => item && typeof item === "object").map(item => ({
+          id: String(item.id || nowId("message")).slice(0, 100),
+          author: String(item.author || "Участник").slice(0, 40),
+          text: String(item.text || "").slice(0, 4000),
+          time: typeof item.time === "string" ? item.time : new Date().toISOString(),
+          likes: Math.max(0, Math.min(999999, Number(item.likes) || 0))
+        }));
+      }
+      return { id, name: String(server.name || `Сервер ${index + 1}`).trim().slice(0, 40), channels, messages };
+    });
+
+    const safeServers = cleanServers.length ? cleanServers : fallback.servers;
+    const activeServer = safeServers.some(server => server.id === raw.activeServer) ? raw.activeServer : safeServers[0].id;
+    const selectedServer = safeServers.find(server => server.id === activeServer);
+    const activeChannel = selectedServer.channels.some(channel => channel.id === raw.activeChannel)
+      ? raw.activeChannel
+      : selectedServer.channels.find(channel => channel.type === "text")?.id || selectedServer.channels[0].id;
+
+    return {
+      servers: safeServers,
+      activeServer,
+      activeChannel,
+      friends: (Array.isArray(raw.friends) ? raw.friends : []).slice(0, LIMITS.friends)
+        .map(friend => String(friend).trim().slice(0, 40)).filter(Boolean),
+      username: String(raw.username || "Ты").trim().slice(0, 40) || "Ты"
+    };
+  }
+
+  let data;
+  try {
+    data = normalizeData(JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"));
+  } catch (error) {
+    console.warn("Не удалось прочитать локальные данные сообщества:", error);
+    data = defaultData();
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      return true;
+    } catch (error) {
+      console.warn("Не удалось сохранить сообщество:", error);
+      if (error && error.name === "QuotaExceededError") {
+        alert("В хранилище браузера закончилось место. Удали старые сообщения или экспортируй данные.");
+      }
+      return false;
+    }
+  }
+
+  const activeServer = () => data.servers.find(server => server.id === data.activeServer) || data.servers[0];
+  const activeChannel = () => activeServer()?.channels.find(channel => channel.id === data.activeChannel) || null;
+
+  function renderRail() {
+    const server = activeServer();
+    $("hubServerRail").innerHTML = data.servers.map(item =>
+      `<button class="hub-server ${item.id === data.activeServer ? "active" : ""}" data-server="${escapeHTML(item.id)}" title="${escapeHTML(item.name)}" aria-label="Сервер ${escapeHTML(item.name)}">${escapeHTML(item.name.slice(0, 1).toUpperCase())}</button>`
+    ).join("");
+
+    $("hubServerName").textContent = server.name;
+    $("hubTextChannels").innerHTML = server.channels.filter(channel => channel.type === "text").map(channel =>
+      `<button class="hub-channel ${channel.id === data.activeChannel ? "active" : ""}" data-channel="${escapeHTML(channel.id)}"><span class="hash">#</span>${escapeHTML(channel.name)}</button>`
+    ).join("") || '<div class="hub-empty">Нет текстовых каналов</div>';
+
+    $("hubVoiceChannels").innerHTML = server.channels.filter(channel => channel.type === "voice").map(channel =>
+      `<button class="hub-channel voice" data-voice="${escapeHTML(channel.id)}"><span class="hash">◖))</span>${escapeHTML(channel.name)}</button>`
+    ).join("") || '<div class="hub-empty">Нет голосовых каналов</div>';
+
+    $("hubUserName").textContent = data.username;
+    $("hubMemberSelf").textContent = `${data.username} · владелец`;
+  }
+
+  function renderMessages() {
+    const channel = activeChannel();
+    const server = activeServer();
+    $("hubCurrentTitle").textContent = channel ? `${channel.type === "voice" ? "◖)) " : "# "}${channel.name}` : "Друзья";
+    $("hubCurrentTopic").textContent = channel?.topic || "Личные контакты и сообщения";
+
+    const messages = channel && channel.type === "text" ? (server.messages[channel.id] || []) : [];
+    $("hubMessages").innerHTML = messages.length ? messages.map(message => {
+      const time = new Date(message.time);
+      const timeLabel = Number.isNaN(time.getTime()) ? "" : time.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+      return `<article class="hub-message">
+        <div class="hub-avatar">${escapeHTML(message.author.slice(0, 1).toUpperCase())}</div>
+        <div class="hub-message-body">
+          <div class="hub-message-head">${escapeHTML(message.author)}<time>${timeLabel}</time></div>
+          <div class="hub-message-text">${escapeHTML(message.text)}</div>
+          <div class="hub-reactions"><button data-react="${escapeHTML(message.id)}" aria-label="Поставить сердечко">❤️ ${message.likes}</button></div>
+        </div>
+      </article>`;
+    }).join("") : '<div class="hub-welcome"><strong>Здесь пока тихо…</strong>Напиши первое сообщение в этом канале.</div>';
+
+    $("hubMessages").scrollTop = $("hubMessages").scrollHeight;
+  }
+
+  function renderAll() {
+    renderRail();
+    renderMessages();
+  }
+
+  function open() {
+    $("communityHub").classList.add("open");
+    renderAll();
+  }
+
+  function close() {
+    $("communityHub").classList.remove("open", "channels-open");
+  }
+
+  function addChannel(type) {
+    const name = prompt(type === "voice" ? "Название голосового канала:" : "Название текстового канала:");
+    if (!name?.trim()) return;
+    const server = activeServer();
+    if (server.channels.length >= LIMITS.channels) {
+      alert(`На одном сервере можно создать не более ${LIMITS.channels} каналов.`);
+      return;
+    }
+    const channel = {
+      id: nowId("channel"),
+      name: name.trim().replace(/^#+/, "").slice(0, 40) || "новый-канал",
+      type,
+      topic: type === "voice" ? "Голосовой канал — локальный интерфейс" : "Новый канал сообщества"
+    };
+    server.channels.push(channel);
+    server.messages[channel.id] = [];
+    data.activeChannel = channel.id;
+    save();
+    renderAll();
+  }
+
+  $("hubExit")?.addEventListener("click", close);
+  $("hubHome")?.addEventListener("click", close);
+  $("hubToggleChannels")?.addEventListener("click", () => $("communityHub").classList.toggle("channels-open"));
+  $("hubAddText")?.addEventListener("click", () => addChannel("text"));
+  $("hubAddVoice")?.addEventListener("click", () => addChannel("voice"));
+
+  $("hubAddServer")?.addEventListener("click", () => {
+    const name = prompt("Название сервера:");
+    if (!name?.trim()) return;
+    if (data.servers.length >= LIMITS.servers) {
+      alert(`Можно создать не более ${LIMITS.servers} серверов в локальной версии.`);
+      return;
+    }
+    const id = nowId("server");
+    const channelId = `general_${id}`;
+    data.servers.push({
+      id,
+      name: name.trim().slice(0, 40),
+      channels: [{ id: channelId, name: "общий", type: "text", topic: "Главный канал сервера" }],
+      messages: { [channelId]: [] }
+    });
+    data.activeServer = id;
+    data.activeChannel = channelId;
+    save();
+    renderAll();
+  });
+
+  $("hubServerRail")?.addEventListener("click", event => {
+    const button = event.target.closest("[data-server]");
+    if (!button) return;
+    data.activeServer = button.dataset.server;
+    const server = activeServer();
+    data.activeChannel = server.channels.find(channel => channel.type === "text")?.id || server.channels[0]?.id;
+    save();
+    renderAll();
+  });
+
+  $("hubTextChannels")?.addEventListener("click", event => {
+    const button = event.target.closest("[data-channel]");
+    if (!button) return;
+    data.activeChannel = button.dataset.channel;
+    save();
+    renderAll();
+    $("communityHub").classList.remove("channels-open");
+  });
+
+  $("hubVoiceChannels")?.addEventListener("click", event => {
+    const button = event.target.closest("[data-voice]");
+    if (!button) return;
+    const channel = activeServer().channels.find(item => item.id === button.dataset.voice);
+    if (channel) alert(`Канал «${channel.name}» открыт в режиме интерфейса. Для настоящего голосового общения нужен онлайн-сервер и WebRTC.`);
+  });
+
+  $("hubComposer")?.addEventListener("submit", event => {
+    event.preventDefault();
+    const input = $("hubMessageInput");
+    const text = input.value.trim();
+    const channel = activeChannel();
+    if (!text || !channel || channel.type !== "text") return;
+
+    const messages = activeServer().messages[channel.id] || (activeServer().messages[channel.id] = []);
+    messages.push({
+      id: nowId("message"),
+      author: data.username,
+      text: text.slice(0, 4000),
+      time: new Date().toISOString(),
+      likes: 0
+    });
+    if (messages.length > LIMITS.messages) messages.splice(0, messages.length - LIMITS.messages);
+
+    input.value = "";
+    save();
+    renderMessages();
+    input.focus();
+  });
+
+  $("hubMessages")?.addEventListener("click", event => {
+    const button = event.target.closest("[data-react]");
+    if (!button) return;
+    const messages = activeServer().messages[data.activeChannel] || [];
+    const message = messages.find(item => item.id === button.dataset.react);
+    if (!message) return;
+    message.likes = Math.min(999999, (Number(message.likes) || 0) + 1);
+    save();
+    renderMessages();
+  });
+
+  $("hubInvite")?.addEventListener("click", async () => {
+    const invite = "Taiga Community — локальное приглашение. Для подключения друзей к общей онлайн-комнате нужен сервер.";
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+      await navigator.clipboard.writeText(invite);
+      alert("Текст приглашения скопирован. Это пока не ссылка на онлайн-сервер.");
+    } catch {
+      alert(invite);
+    }
+  });
+
+  $("hubServerMenu")?.addEventListener("click", () => {
+    const name = prompt("Новое название сервера:", activeServer().name);
+    if (!name?.trim()) return;
+    activeServer().name = name.trim().slice(0, 40);
+    save();
+    renderRail();
+  });
+
+  document.querySelectorAll("[data-hub-view]").forEach(button => {
+    button.addEventListener("click", () => {
+      if (button.dataset.hubView !== "friends") {
+        alert("Личные сообщения появятся в онлайн-версии. Сейчас данные хранятся только на этом устройстве.");
+        return;
+      }
+      const friend = prompt("Имя друга (локальный список):");
+      if (!friend?.trim()) return;
+      const cleanName = friend.trim().slice(0, 40);
+      if (data.friends.length >= LIMITS.friends) {
+        alert(`В локальном списке максимум ${LIMITS.friends} друзей.`);
+        return;
+      }
+      if (data.friends.some(name => name.toLocaleLowerCase("ru") === cleanName.toLocaleLowerCase("ru"))) {
+        alert("Этот друг уже есть в списке.");
+        return;
+      }
+      data.friends.push(cleanName);
+      save();
+      $("hubCurrentTitle").textContent = "Друзья";
+      $("hubCurrentTopic").textContent = "Локальный список друзей";
+      $("hubMessages").innerHTML = data.friends.map(name =>
+        `<div class="hub-member"><div class="hub-avatar">${escapeHTML(name.slice(0, 1).toUpperCase())}</div>${escapeHTML(name)} · не в сети</div>`
+      ).join("");
+    });
+  });
+
+  $("hubMembersToggle")?.addEventListener("click", () => {
+    if (window.matchMedia("(max-width:760px)").matches) {
+      alert(`${data.username} — владелец сервера`);
+    } else {
+      $("hubMembers").hidden = !$("hubMembers").hidden;
+    }
+  });
+
+  const topbar = document.querySelector(".topbar-right");
+  if (topbar && !$("openCommunityHub")) {
+    const button = document.createElement("button");
+    button.className = "icon-button";
+    button.id = "openCommunityHub";
+    button.type = "button";
+    button.title = "Сообщество — функции как в Discord";
+    button.setAttribute("aria-label", "Открыть сообщество");
+    button.textContent = "◉";
+    button.addEventListener("click", open);
+    topbar.prepend(button);
+  }
+
+  window.TaigaCommunity = { open, close };
+})();
+</script>
+
+
+<!-- TAIGA COMMAND CENTER -->
+<div id="taigaCommandPalette" role="dialog" aria-modal="true" aria-label="Центр команд">
+  <div class="taiga-command-card">
+    <div class="taiga-command-search">
+      <span>⌕</span>
+      <input id="taigaCommandSearch" type="search" placeholder="Что хочешь сделать?" autocomplete="off" aria-label="Поиск команды">
+    </div>
+    <div class="taiga-command-list" id="taigaCommandList"></div>
+    <div class="taiga-command-footer"><span>↑ ↓ Навигация · Enter Выбрать</span><span>Esc Закрыть</span></div>
+  </div>
+</div>
+<div id="taigaToastStack" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = id => document.getElementById(id);
+  const palette = $("taigaCommandPalette");
+  const search = $("taigaCommandSearch");
+  const list = $("taigaCommandList");
+  const toastStack = $("taigaToastStack");
+  if (!palette || !search || !list || !toastStack) return;
+
+
+  // Резервные копии: API-ключи исключаются самим TaigaStore.exportBackup().
+  const backupInput = document.createElement("input");
+  backupInput.type = "file";
+  backupInput.accept = ".json,application/json";
+  backupInput.hidden = true;
+  backupInput.id = "taigaBackupImportInput";
+  document.body.appendChild(backupInput);
+
+  function exportFullBackup() {
+    try {
+      const store = window.TaigaStore;
+      if (!store?.exportBackup || !store?.downloadText) {
+        throw new Error("Хранилище Taiga ещё не готово");
+      }
+      const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+      store.downloadText(`taiga-backup-${stamp}.json`, store.exportBackup(), "application/json;charset=utf-8");
+      toast("Резервная копия создана. API-ключи в неё не входят.", "success");
+    } catch (error) {
+      toast(`Не удалось создать копию: ${error.message}`, "error");
+    }
+  }
+
+  backupInput.addEventListener("change", async () => {
+    const file = backupInput.files?.[0];
+    backupInput.value = "";
+    if (!file) return;
+    if (file.size > 15 * 1024 * 1024) {
+      toast("Файл слишком большой. Максимум — 15 МБ.", "error");
+      return;
+    }
+    if (!window.confirm("Импорт заменит текущие диалоги и память. Продолжить?")) return;
+    try {
+      const raw = await file.text();
+      window.TaigaStore.importBackup(raw);
+      window.renderCurrentChat?.();
+      window.renderChatMessages?.();
+      window.TaigaStore.save?.();
+      toast("Резервная копия импортирована.", "success");
+    } catch (error) {
+      toast(`Импорт не выполнен: ${error.message}`, "error");
+    }
+  });
+
+  function importFullBackup() {
+    backupInput.click();
+  }
+
+  const commands = [
+    { group: "Навигация", icon: "＋", title: "Новый диалог", detail: "Создать чистый чат с Тайгой", keys: "Ctrl ⇧ N", run: () => $("newChatButton")?.click() },
+    { group: "Навигация", icon: "⌕", title: "Поиск по диалогам", detail: "Найти нужный разговор", keys: "Ctrl K", run: () => { $("chatSearch")?.focus(); $("chatSearch")?.select(); } },
+    { group: "Навигация", icon: "◉", title: "Открыть сообщество", detail: "Серверы и каналы в стиле Discord", run: () => window.TaigaCommunity?.open() },
+    { group: "Персонализация", icon: "⚙", title: "Настройки и модели", detail: "Провайдеры, голос, внешний вид", run: () => $("openSettingsButton")?.click() },
+    { group: "Персонализация", icon: "✧", title: "Память Тайги", detail: "Посмотреть сохранённые воспоминания", run: () => $("openMemoryButton")?.click() },
+    { group: "Персонализация", icon: "◷", title: "Статистика", detail: "Открыть статистику использования", run: () => $("openStatsButton")?.click() },
+    { group: "Инструменты", icon: "↧", title: "Экспорт текущего чата", detail: "Сохранить разговор в файл", run: () => $("exportChatButton")?.click() },
+    { group: "Резервные копии", icon: "⬇", title: "Экспортировать все данные", detail: "Сохранить чаты и память в JSON без API-ключей", keys: "Ctrl ⇧ B", run: exportFullBackup },
+    { group: "Резервные копии", icon: "⬆", title: "Импортировать резервную копию", detail: "Восстановить данные из JSON-файла", run: importFullBackup },
+    { group: "Инструменты", icon: "⌘", title: "Режим фокуса", detail: "Спрятать интерфейс, оставив диалог", run: () => toggleFocus() },
+    { group: "Инструменты", icon: "⤴", title: "К началу диалога", detail: "Прокрутить историю вверх", run: () => $("mainScroll")?.scrollTo({ top: 0, behavior: "smooth" }) },
+    { group: "Инструменты", icon: "↓", title: "К последнему сообщению", detail: "Прокрутить историю вниз", run: () => { const el = $("mainScroll"); if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" }); } },
+    { group: "Инструменты", icon: "⎘", title: "Копировать последний ответ", detail: "Скопировать текст последнего сообщения Тайги", run: copyLastAnswer },
+    { group: "Инструменты", icon: "⌁", title: "Диагностика приложения", detail: "Проверить хранилище, браузер, голос и AI-ключи", run: runDiagnostics },
+    { group: "Справка", icon: "⌨", title: "Горячие клавиши", detail: "Показать доступные сочетания", run: showShortcuts }
+  ];
+
+  let selectedIndex = 0;
+  let visibleCommands = commands.slice();
+
+  function toast(message, type = "info") {
+    const item = document.createElement("div");
+    item.className = `taiga-toast ${type}`;
+    const icon = document.createElement("span");
+    icon.className = "taiga-toast-icon";
+    icon.textContent = type === "success" ? "✓" : type === "error" ? "!" : "✦";
+    const text = document.createElement("span");
+    text.textContent = String(message);
+    item.append(icon, text);
+    toastStack.append(item);
+    window.setTimeout(() => item.remove(), 3200);
+  }
+
+  function toggleFocus() {
+    const active = document.body.classList.toggle("taiga-focus-mode");
+    toast(active ? "Режим фокуса включён. Наведи курсор на край интерфейса, чтобы вернуть панели." : "Режим фокуса выключен.", "success");
+  }
+
+  async function copyLastAnswer() {
+    const bubbles = document.querySelectorAll(".message.assistant .message-bubble");
+    const last = bubbles[bubbles.length - 1];
+    const text = last?.innerText?.trim();
+    if (!text) return toast("Пока нет ответа Тайги для копирования.", "error");
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+      await navigator.clipboard.writeText(text);
+      toast("Ответ скопирован в буфер обмена.", "success");
+    } catch {
+      toast("Браузер не разрешил доступ к буферу обмена.", "error");
+    }
+  }
+
+  function showShortcuts() {
+    toast("Ctrl+K — поиск · Ctrl+Shift+N — новый чат · Ctrl+Shift+P — центр команд · Ctrl+Shift+F — режим фокуса · Ctrl+Shift+B — резервная копия · Esc — закрыть окно", "info");
+  }
+
+  function runDiagnostics() {
+    const checks = [];
+    const add = (name, ok, detail) => checks.push({ name, ok: Boolean(ok), detail: String(detail || "") });
+    let storageBytes = 0;
+    let storageOk = false;
+    try {
+      const key = "__taiga_diagnostic__";
+      localStorage.setItem(key, "ok");
+      storageOk = localStorage.getItem(key) === "ok";
+      localStorage.removeItem(key);
+      storageBytes = new Blob([JSON.stringify(window.TaigaStore?.getState?.() || {})]).size;
+    } catch (error) {
+      add("Локальное хранилище", false, error?.message || "Недоступно");
+    }
+    if (!checks.some(item => item.name === "Локальное хранилище")) {
+      add("Локальное хранилище", storageOk, storageOk ? `Работает · данные Taiga около ${(storageBytes / 1024).toFixed(1)} КБ` : "Не удалось записать тестовые данные");
+    }
+    add("Сеть", navigator.onLine, navigator.onLine ? "Устройство сообщает, что интернет доступен" : "Браузер сообщает об отсутствии сети");
+    add("Потоковые ответы", typeof ReadableStream !== "undefined" && typeof TextDecoder !== "undefined", "ReadableStream + TextDecoder");
+    add("Голосовой вывод", "speechSynthesis" in window && "SpeechSynthesisUtterance" in window, "Системное озвучивание текста");
+    add("Голосовой ввод", Boolean(window.SpeechRecognition || window.webkitSpeechRecognition), "Распознавание речи зависит от браузера");
+    add("Чтение изображений", typeof FileReader !== "undefined", "PNG / JPEG / WebP");
+    add("Буфер обмена", Boolean(navigator.clipboard?.writeText), window.isSecureContext ? "Clipboard API доступен в защищённом контексте" : "Может быть недоступен при запуске из file://");
+    add("Защищённый контекст", Boolean(window.isSecureContext), window.isSecureContext ? "HTTPS или localhost" : "Файл открыт напрямую; часть API браузера ограничена");
+    const settings = window.TaigaStore?.getSettings?.() || {};
+    const names = { groq: "Groq", deepseek: "DeepSeek", openai: "OpenAI", gemini: "Gemini", claude: "Claude" };
+    Object.keys(names).forEach(key => add(`Ключ ${names[key]}`, Boolean(settings.keys?.[key]), settings.keys?.[key] ? `Ключ сохранён · ${settings.models?.[key] || "модель не задана"}` : "Ключ не добавлен"));
+    add("Данные сообщества", true, "Сообщество хранится локально на этом устройстве; онлайн-синхронизации пока нет");
+
+    let overlay = document.getElementById("taigaDiagnosticsOverlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "taigaDiagnosticsOverlay";
+      overlay.style.cssText = "position:fixed;inset:0;z-index:3000;background:#08060dcc;backdrop-filter:blur(12px);display:grid;place-items:center;padding:20px";
+      overlay.innerHTML = `<section role="dialog" aria-modal="true" aria-labelledby="taigaDiagnosticsTitle" style="width:min(680px,100%);max-height:min(82vh,760px);overflow:auto;background:#191523;border:1px solid #ffffff22;border-radius:22px;padding:22px;box-shadow:0 25px 80px #000b;color:#faf5ff"><header style="display:flex;align-items:center;justify-content:space-between;gap:16px"><div><div style="color:#ff83ba;font-size:12px;font-weight:700;letter-spacing:.12em">TAIGA SYSTEM CHECK</div><h2 id="taigaDiagnosticsTitle" style="margin:4px 0 0;font-size:22px">Диагностика приложения</h2></div><button type="button" data-diagnostics-close aria-label="Закрыть" style="border:0;background:#ffffff12;border-radius:10px;color:inherit;font-size:22px;width:38px;height:38px">×</button></header><p style="color:#a49aaf;font-size:13px;margin:10px 0 16px">Проверки выполняются локально. Никакие API-запросы и ключи не отправляются.</p><div data-diagnostics-results style="display:grid;gap:8px"></div><footer style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px"><button type="button" data-diagnostics-refresh style="background:#e65e9f;border:0;border-radius:10px;padding:10px 14px;color:white;font-weight:700">Повторить проверку</button><button type="button" data-diagnostics-close style="background:#ffffff12;border:1px solid #ffffff20;border-radius:10px;padding:10px 14px;color:inherit">Закрыть</button></footer></section>`;
+      document.body.append(overlay);
+      overlay.addEventListener("click", event => {
+        if (event.target === overlay || event.target.closest("[data-diagnostics-close]")) overlay.remove();
+        if (event.target.closest("[data-diagnostics-refresh]")) { overlay.remove(); runDiagnostics(); }
+      });
+      document.addEventListener("keydown", function closeDiagnostics(event) {
+        if (event.key === "Escape" && document.getElementById("taigaDiagnosticsOverlay")) {
+          document.getElementById("taigaDiagnosticsOverlay")?.remove();
+          document.removeEventListener("keydown", closeDiagnostics);
+        }
+      });
+    }
+    const results = overlay.querySelector("[data-diagnostics-results]");
+    results.replaceChildren();
+    const failures = checks.filter(item => !item.ok).length;
+    const summary = document.createElement("div");
+    summary.style.cssText = "padding:11px 13px;border-radius:12px;background:#ffffff0b;color:#d9d0e3;font-size:13px;margin-bottom:3px";
+    summary.textContent = `${checks.length - failures} из ${checks.length} проверок пройдены. Красные пункты не всегда означают поломку: часть возможностей зависит от браузера и способа запуска.`;
+    results.append(summary);
+    checks.forEach(item => {
+      const row = document.createElement("div");
+      row.style.cssText = "display:grid;grid-template-columns:22px minmax(0,1fr);gap:9px;padding:10px 12px;border:1px solid #ffffff12;border-radius:12px;background:#ffffff06";
+      const mark = document.createElement("span");
+      mark.textContent = item.ok ? "✓" : "!";
+      mark.style.cssText = `font-weight:800;color:${item.ok ? "#79dba7" : "#f5cf82"}`;
+      const copy = document.createElement("div");
+      const title = document.createElement("div");
+      title.textContent = item.name;
+      title.style.cssText = "font-size:13px;font-weight:700";
+      const detail = document.createElement("div");
+      detail.textContent = item.detail;
+      detail.style.cssText = "font-size:12px;color:#a49aaf;margin-top:2px;overflow-wrap:anywhere";
+      copy.append(title, detail);
+      row.append(mark, copy);
+      results.append(row);
+    });
+    overlay.style.display = "grid";
+  }
+
+  function renderCommands() {
+    const query = search.value.trim().toLocaleLowerCase("ru");
+    visibleCommands = commands.filter(command =>
+      `${command.group} ${command.title} ${command.detail}`.toLocaleLowerCase("ru").includes(query)
+    );
+    selectedIndex = Math.min(selectedIndex, Math.max(0, visibleCommands.length - 1));
+    list.replaceChildren();
+
+    if (!visibleCommands.length) {
+      const empty = document.createElement("div");
+      empty.className = "hub-empty";
+      empty.textContent = "Ничего не найдено. Попробуй другой запрос.";
+      list.append(empty);
+      return;
+    }
+
+    let lastGroup = "";
+    visibleCommands.forEach((command, index) => {
+      if (command.group !== lastGroup) {
+        const group = document.createElement("div");
+        group.className = "taiga-command-group";
+        group.textContent = command.group;
+        list.append(group);
+        lastGroup = command.group;
+      }
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `taiga-command-item${index === selectedIndex ? " selected" : ""}`;
+      button.setAttribute("role", "option");
+      button.setAttribute("aria-selected", String(index === selectedIndex));
+      const icon = document.createElement("span");
+      icon.className = "taiga-command-icon";
+      icon.textContent = command.icon;
+      const copy = document.createElement("span");
+      copy.className = "taiga-command-copy";
+      const title = document.createElement("b");
+      title.textContent = command.title;
+      const detail = document.createElement("small");
+      detail.textContent = command.detail;
+      copy.append(title, detail);
+      button.append(icon, copy);
+      if (command.keys) {
+        const key = document.createElement("kbd");
+        key.textContent = command.keys;
+        button.append(key);
+      }
+      button.addEventListener("mouseenter", () => {
+        selectedIndex = index;
+        updateSelection();
+      });
+      button.addEventListener("click", () => execute(index));
+      list.append(button);
+    });
+  }
+
+  function updateSelection() {
+    list.querySelectorAll(".taiga-command-item").forEach((item, index) => {
+      const selected = index === selectedIndex;
+      item.classList.toggle("selected", selected);
+      item.setAttribute("aria-selected", String(selected));
+      if (selected) item.scrollIntoView({ block: "nearest" });
+    });
+  }
+
+  function openPalette() {
+    palette.classList.add("open");
+    search.value = "";
+    renderCommands();
+    window.setTimeout(() => search.focus(), 0);
+  }
+
+  function closePalette() {
+    palette.classList.remove("open");
+  }
+
+  function execute(index) {
+    const command = visibleCommands[index];
+    if (!command) return;
+    closePalette();
+    try {
+      const result = command.run();
+      if (result && typeof result.catch === "function") result.catch(error => {
+        console.error("Taiga command failed:", error);
+        toast("Не удалось выполнить команду.", "error");
+      });
+    } catch (error) {
+      console.error("Taiga command failed:", error);
+      toast("Не удалось выполнить команду.", "error");
+    }
+  }
+
+  search.addEventListener("input", () => {
+    selectedIndex = 0;
+    renderCommands();
+  });
+  search.addEventListener("keydown", event => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      selectedIndex = Math.min(selectedIndex + 1, visibleCommands.length - 1);
+      updateSelection();
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      selectedIndex = Math.max(selectedIndex - 1, 0);
+      updateSelection();
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      execute(selectedIndex);
+    } else if (event.key === "Escape") {
+      closePalette();
+    }
+  });
+
+  palette.addEventListener("mousedown", event => {
+    if (event.target === palette) closePalette();
+  });
+
+  document.addEventListener("keydown", event => {
+    const target = event.target;
+    const typing = target && (
+      target.tagName === "INPUT" ||
+      target.tagName === "TEXTAREA" ||
+      target.isContentEditable
+    );
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === "p") {
+      event.preventDefault();
+      openPalette();
+      return;
+    }
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === "f") {
+      event.preventDefault();
+      toggleFocus();
+      return;
+    }
+    if (event.key === "Escape" && palette.classList.contains("open")) {
+      closePalette();
+      return;
+    }
+    if (!typing && event.key === "?") {
+      showShortcuts();
+    }
+  });
+
+  const topbar = document.querySelector(".topbar-right");
+  if (topbar && !$("taigaCommandButton")) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.id = "taigaCommandButton";
+    button.className = "icon-button";
+    button.title = "Центр команд · Ctrl+Shift+P";
+    button.setAttribute("aria-label", "Открыть центр команд");
+    button.textContent = "⌘";
+    button.addEventListener("click", openPalette);
+    topbar.prepend(button);
+  }
+
+  document.addEventListener("keydown", event => {
+    if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "b") {
+      event.preventDefault();
+      exportFullBackup();
+    }
+  });
+
+  window.TaigaWorkbench = {
+    openPalette,
+    closePalette,
+    toast,
+    toggleFocus,
+    version: "Windows 11 Edition"
+  };
+  console.info("Taiga Workbench initialized");
 })();
 </script>
 </body>
